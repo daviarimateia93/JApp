@@ -11,7 +11,7 @@ public abstract class NumberHelper {
 	public static Number safeValueOf(final String string) {
 		try {
 			return valueOf(string);
-		} catch (NumberFormatException exception) {
+		} catch (final NumberFormatException exception) {
 			return null;
 		}
 	}
