@@ -15,6 +15,10 @@ import japp.util.ReflectionHelper;
 
 public abstract class JPAHelper {
 	
+	protected JPAHelper() {
+		
+	}
+	
 	public static <T> T initialize(final T object) {
 		return initialize(object, new LinkedHashSet<>());
 	}

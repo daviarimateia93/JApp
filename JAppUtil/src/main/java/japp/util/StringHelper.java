@@ -30,6 +30,10 @@ public abstract class StringHelper {
 	private static final String HTML_CODE_SINGLE_QUOTE = "&#039;";
 	private static final String HTML_CODE_EQUALS = "&#61;";
 	
+	protected StringHelper() {
+		
+	}
+	
 	public static String join(final String[] strings, final String glue) {
 		return join(strings, glue, null);
 	}

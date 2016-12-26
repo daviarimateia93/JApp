@@ -9,6 +9,10 @@ import java.util.regex.Pattern;
 
 public abstract class FormDataHelper {
 	
+	protected FormDataHelper() {
+		
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Map<String, Object> parse(final String queryString) {
 		final Map<String, Object> formData = new HashMap<>();

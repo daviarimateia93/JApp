@@ -2,6 +2,10 @@ package japp.util;
 
 public abstract class ExceptionHelper {
 	
+	protected ExceptionHelper() {
+		
+	}
+	
 	public static Throwable getCause(final Throwable throwable, final Class<? extends Throwable> throwableClass) {
 		final Setable<Throwable> throwableCause = new Setable<>();
 		

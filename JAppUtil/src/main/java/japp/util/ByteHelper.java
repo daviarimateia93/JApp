@@ -9,6 +9,10 @@ public abstract class ByteHelper {
 	
 	private static final String CHARSET_UTF_8 = "UTF-8";
 	
+	protected ByteHelper() {
+		
+	}
+	
 	public static byte[] toBytes(final String string) {
 		try {
 			return string.getBytes(CHARSET_UTF_8);

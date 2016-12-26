@@ -5,7 +5,7 @@ import japp.web.controller.Controller;
 
 public abstract class HttpController implements Controller {
 	
-	public HttpController() {
+	protected HttpController() {
 		
 	}
 	

@@ -25,7 +25,7 @@ public abstract class Repository<T extends Entity, U> {
 	protected final Class<T> domainClass;
 	protected final EntityManager entityManager;
 	
-	public Repository(final Class<T> domainClass, final EntityManager entityManager) {
+	protected Repository(final Class<T> domainClass, final EntityManager entityManager) {
 		this.domainClass = domainClass;
 		this.entityManager = entityManager;
 	}

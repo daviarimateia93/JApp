@@ -16,6 +16,10 @@ import java.util.Set;
 
 public abstract class ReflectionHelper {
 	
+	protected ReflectionHelper() {
+		
+	}
+
 	public static Class<?> getGenericClass(final Field field) {
 		try {
 			return (Class<?>) ((ParameterizedType) field.getClass().getGenericSuperclass()).getActualTypeArguments()[0];

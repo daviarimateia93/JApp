@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class HttpDispatcherHelper {
 	
+	protected HttpDispatcherHelper() {
+		
+	}
+	
 	public static String getUriWithoutContextPath(final HttpServletRequest httpServletRequest) {
 		return httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
 	}

@@ -7,7 +7,7 @@ import japp.web.controller.Controller;
 
 public abstract class WsController extends Endpoint implements Controller {
 	
-	public WsController() {
+	protected WsController() {
 		
 	}
 	

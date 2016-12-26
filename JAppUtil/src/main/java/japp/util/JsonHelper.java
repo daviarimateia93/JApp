@@ -14,6 +14,10 @@ public abstract class JsonHelper {
 	
 	public static String DATE_TIME_FORMAT_PATTERN = DateHelper.DATE_TIME_FORMAT_PATTERN;
 	
+	protected JsonHelper() {
+		
+	}
+	
 	public static ObjectMapper getObjectMapper() {
 		return new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN)).registerModule(new Hibernate5Module()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
 	}

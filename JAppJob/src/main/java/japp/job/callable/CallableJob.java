@@ -4,4 +4,7 @@ import java.util.concurrent.Callable;
 
 public abstract class CallableJob<T> implements Callable<T> {
 	
+	protected CallableJob() {
+		
+	}
 }

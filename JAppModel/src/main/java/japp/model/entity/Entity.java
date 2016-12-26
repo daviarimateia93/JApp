@@ -16,6 +16,10 @@ public abstract class Entity implements Serializable, Cloneable {
 	
 	private static final long serialVersionUID = 1272141855986763067L;
 	
+	protected Entity() {
+		
+	}
+	
 	public List<Field> getIdFields() {
 		final List<Field> idFields = new ArrayList<>();
 		final List<Field> fields = ReflectionHelper.getFields(this);

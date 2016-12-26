@@ -12,11 +12,11 @@ public abstract class Business {
 	protected final RepositoryFactory repositoryFactory;
 	protected final EntityManager entityManager;
 	
-	public Business() {
+	protected Business() {
 		this((EntityManager) null);
 	}
 	
-	public Business(final EntityManager entityManager) {
+	protected Business(final EntityManager entityManager) {
 		this(ModelApp.getModelAppConfiguration().getBusinessFactory(), ModelApp.getModelAppConfiguration().getRepositoryFactory(), entityManager);
 	}
 	

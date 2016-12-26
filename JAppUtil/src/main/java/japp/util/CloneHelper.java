@@ -8,6 +8,10 @@ import java.io.ObjectOutputStream;
 
 public abstract class CloneHelper {
 	
+	protected CloneHelper() {
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(final T object) {
 		if (object == null) {

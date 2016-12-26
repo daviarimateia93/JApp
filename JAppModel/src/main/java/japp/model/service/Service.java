@@ -25,11 +25,11 @@ public abstract class Service implements ProxyInterceptable {
 	protected final RepositoryFactory repositoryFactory;
 	protected final EntityManager entityManager;
 	
-	public Service() {
+	protected Service() {
 		this((EntityManager) null);
 	}
 	
-	public Service(final EntityManager entityManager) {
+	protected Service(final EntityManager entityManager) {
 		this(ModelApp.getModelAppConfiguration().getBusinessFactory(), ModelApp.getModelAppConfiguration().getRepositoryFactory(), entityManager);
 	}
 	
