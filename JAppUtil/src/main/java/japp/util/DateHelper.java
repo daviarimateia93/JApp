@@ -12,7 +12,7 @@ public abstract class DateHelper {
 	
 	private static final String EMPTY = "";
 	
-	public static final String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	
 	protected DateHelper() {
 		
