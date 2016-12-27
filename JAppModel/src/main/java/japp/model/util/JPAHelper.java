@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import japp.model.entity.Entity;
@@ -68,7 +69,9 @@ public abstract class JPAHelper {
 		if (!visitedObjects.contains(receiver)) {
 			visitedObjects.add(receiver);
 			
-			if (Collection.class.isAssignableFrom(provider.getClass())) {
+			if (Map.class.isAssignableFrom(provider.getClass())) {
+				mergeMap((Map) provider, (Map) receiver, visitedObjects);
+			} else if (Collection.class.isAssignableFrom(provider.getClass())) {
 				mergeCollection((Collection) provider, (Collection) receiver, visitedObjects);
 			} else {
 				try {
@@ -85,6 +88,12 @@ public abstract class JPAHelper {
 							
 							if (providerValue == null || ReflectionHelper.isPrimitive(providerValue) || ReflectionHelper.isEnum(providerValue) || ReflectionHelper.isDate(providerValue) || ((!providerValue.equals(receiverValue) && providerValue instanceof Entity))) {
 								writeMethod.invoke(receiver, providerValue);
+							} else if (ReflectionHelper.isMap(providerValue)) {
+								if (receiverValue == null) {
+									writeMethod.invoke(receiver, providerValue);
+								} else {
+									mergeMap((Map) providerValue, (Map) receiverValue, visitedObjects);
+								}
 							} else if (ReflectionHelper.isCollection(providerValue)) {
 								if (receiverValue == null) {
 									writeMethod.invoke(receiver, providerValue);
@@ -99,6 +108,26 @@ public abstract class JPAHelper {
 				} catch (final IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
 					
 				}
+			}
+		}
+	}
+	
+	protected static <T, U> void mergeMap(final Map<T, U> providers, final Map<T, U> receivers, final Set<Object> visitedObjects) {
+		for (final Map.Entry<T, U> providerEntry : providers.entrySet()) {
+			if (receivers.containsKey(providerEntry.getKey())) {
+				merge(providerEntry.getValue(), receivers.get(providerEntry.getKey()), visitedObjects);
+			} else {
+				receivers.put(providerEntry.getKey(), providerEntry.getValue());
+			}
+		}
+		
+		final Iterator<Map.Entry<T, U>> receiversIterator = receivers.entrySet().iterator();
+		
+		while (receiversIterator.hasNext()) {
+			final Map.Entry<T, U> receiverEntry = receiversIterator.next();
+			
+			if (!providers.containsKey(receiverEntry.getKey())) {
+				receiversIterator.remove();
 			}
 		}
 	}
