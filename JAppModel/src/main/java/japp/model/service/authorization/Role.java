@@ -10,6 +10,6 @@ import japp.util.ProxyMethodInterceptable;
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ProxyMethodInterceptable
-public @interface Rule {
+public @interface Role {
 	String[] value() default {};
 }
