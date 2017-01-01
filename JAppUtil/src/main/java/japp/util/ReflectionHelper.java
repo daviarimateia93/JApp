@@ -8,6 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,7 @@ public abstract class ReflectionHelper {
 	protected ReflectionHelper() {
 		
 	}
-
+	
 	public static Class<?> getGenericClass(final Field field) {
 		try {
 			return (Class<?>) ((ParameterizedType) field.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -208,6 +209,14 @@ public abstract class ReflectionHelper {
 		return object instanceof Date;
 	}
 	
+	public static boolean isBigDecimal(final Field field, final Object instance) throws IllegalArgumentException, IllegalAccessException {
+		return BigDecimal.class.isAssignableFrom(field.getType()) || isBigDecimal(field.get(instance));
+	}
+	
+	public static boolean isBigDecimal(final Object object) {
+		return object instanceof BigDecimal;
+	}
+	
 	public static boolean isCollection(final Field field, final Object instance) throws IllegalArgumentException, IllegalAccessException {
 		return Collection.class.isAssignableFrom(field.getType()) || isCollection(field.get(instance));
 	}
@@ -319,6 +328,22 @@ public abstract class ReflectionHelper {
 		} else {
 			return null;
 		}
+	}
+	
+	public static List<Method> getMethods(final Class<?> type, final String methodName) {
+		return getMethods(type, methodName, new ArrayList<>());
+	}
+	
+	private static List<Method> getMethods(final Class<?> type, final String methodName, final List<Method> methods) {
+		final boolean hasSuperclass = type.getSuperclass() != null;
+		
+		methods.addAll(Arrays.asList(type.getDeclaredMethods()));
+		
+		if (hasSuperclass) {
+			getMethods(type, methodName, methods);
+		}
+		
+		return methods;
 	}
 	
 	public static Method getMethod(final Class<?> type, final String methodName, final Class<?>[] parameterTypes) throws NoSuchMethodException {

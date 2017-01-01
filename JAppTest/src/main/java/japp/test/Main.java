@@ -1,6 +1,8 @@
 package japp.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -17,8 +19,31 @@ public class Main {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	public static void main(final String[] args) {
+		final EntityB entityB = new EntityB();
+		entityB.setValue("Valor da entidade B");
+		
+		final EntityA entityA = new EntityA();
+		entityA.setA(27);
+		entityA.setB("Minha letra b hehehe");
+		entityA.setEntitiesB(Arrays.asList(entityB));
+		
+		final Map<String, Object> magicMap = new HashMap<>();
+		magicMap.put("entityA", entityA);
+		
+		final String jsonString = JsonHelper.toString(magicMap);
+		
+		System.out.println(jsonString);
+		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		final Map<String, Map> jsonMap = JsonHelper.toObject(jsonString, Map.class);
+		System.out.println(jsonMap);
+		
+		System.out.println("end");
+	}
+	
+	@SuppressWarnings("unused")
+	public static void main2(final String[] args) {
 		String pattern = "/rest/{anything}".replaceAll("\\{(.+?)\\}", "([a-zA-Z0-9\\\\\\%\\\\\\-\\\\\\.\\\\\\_\\\\\\~\\\\\\:\\\\\\/\\\\\\?\\\\\\#\\\\\\[\\\\\\]\\\\\\@\\\\\\!\\\\\\$\\\\\\&\\\\\\'\\\\\\(\\\\\\)\\\\\\*\\\\\\+\\\\\\,\\\\\\;\\\\\\=]*?)");
 		Pattern.compile("^(" + pattern + ")$", Pattern.CASE_INSENSITIVE);
 		
