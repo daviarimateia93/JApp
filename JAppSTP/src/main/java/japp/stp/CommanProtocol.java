@@ -8,7 +8,7 @@ import stp.message.Message;
 import stp.message.Payload;
 import stp.system.STPObject;
 
-public class SimpleCommandProtocol extends STPObject {
+public class CommanProtocol extends STPObject {
 	
 	public static class Command {
 		private String name;
