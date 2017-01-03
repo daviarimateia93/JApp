@@ -28,6 +28,11 @@ public class RepositoryFactoryImpl implements Singletonable, RepositoryFactory {
 	}
 	
 	@Override
+	public synchronized EntityManager getEntityManager(final String persistenceUnitName) {
+		return getEntityManager(persistenceUnitName, null);
+	}
+	
+	@Override
 	public synchronized EntityManager getEntityManager(final String persistenceUnitName, final Map<?, ?> persistenceProperties) {
 		final String persistencePropertiesHash = getEntityManagerHash(persistenceUnitName, persistenceProperties);
 		
@@ -153,11 +158,13 @@ public class RepositoryFactoryImpl implements Singletonable, RepositoryFactory {
 	private String getEntityManagerHash(final String persistenceUnitName, final Map<?, ?> persistenceProperties) {
 		final StringBuilder stringBuilder = new StringBuilder("persistenceUnitName=" + persistenceUnitName + ";");
 		
-		for (final Map.Entry<?, ?> entry : persistenceProperties.entrySet()) {
-			stringBuilder.append(entry.getKey());
-			stringBuilder.append("=");
-			stringBuilder.append(entry.getValue());
-			stringBuilder.append(";");
+		if (persistenceProperties != null) {
+			for (final Map.Entry<?, ?> entry : persistenceProperties.entrySet()) {
+				stringBuilder.append(entry.getKey());
+				stringBuilder.append("=");
+				stringBuilder.append(entry.getValue());
+				stringBuilder.append(";");
+			}
 		}
 		
 		return stringBuilder.toString();

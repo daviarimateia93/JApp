@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 
 public interface RepositoryFactory {
 	
+	public EntityManager getEntityManager(final String persistenceUnitName);
+	
 	public EntityManager getEntityManager(final String persistenceUnitName, final Map<?, ?> persistenceProperties);
 	
 	public void closeEntityManager();
