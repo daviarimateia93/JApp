@@ -1,57 +1,27 @@
-package japp.stp;
+package japp.stp.command.protocol;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import japp.stp.command.Command;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.system.STPObject;
 
 public class CommanProtocol extends STPObject {
 	
-	public static class Command {
-		private String name;
-		private String[] values;
-		
-		public Command(final String name, final String... values) {
-			this.name = name;
-			this.values = values;
-		}
-		
-		public String getName() {
-			return name;
-		}
-		
-		public String[] getValues() {
-			return values;
-		}
-		
-		@Override
-		public String toString() {
-			final StringBuilder stringBuilder = new StringBuilder();
-			
-			stringBuilder.append(name + ";");
-			
-			for (final String value : values) {
-				stringBuilder.append(value + ";");
-			}
-			
-			return stringBuilder.toString();
-		}
-	}
-	
 	public static Message parse(final String type, final Command command) {
 		try {
 			final StringBuilder stringBuilder = new StringBuilder();
 			
-			if (command.name != null) {
-				stringBuilder.append(encode(command.name));
+			if (command.getName() != null) {
+				stringBuilder.append(encode(command.getName()));
 				stringBuilder.append(";");
 			}
 			
-			if (command.values != null) {
-				for (String value : command.values) {
+			if (command.getValues() != null) {
+				for (String value : command.getValues()) {
 					stringBuilder.append(encode(value));
 					stringBuilder.append(";");
 				}

@@ -1,13 +1,14 @@
-package japp.stp.parser;
+package japp.stp.command.parser;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import japp.model.ModelApp;
 import japp.model.service.Service;
-import japp.stp.CommanProtocol;
-import japp.stp.CommanProtocol.Command;
-import japp.stp.NetworkingProtocolException;
+import japp.stp.command.Command;
+import japp.stp.command.exception.CommandProtocolException;
+import japp.stp.command.protocol.CommanProtocol;
+import japp.stp.command.runnable.CommandRunnable;
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.parser.Parser;
@@ -15,8 +16,8 @@ import stp.system.STPException;
 
 public abstract class CommandParser extends Parser {
 	
-	private Map<String, Runnable> readEvents = new HashMap<>();
-	private Map<String, Runnable> writtenEvents = new HashMap<>();
+	private Map<String, CommandRunnable> readEvents = new HashMap<>();
+	private Map<String, CommandRunnable> writtenEvents = new HashMap<>();
 	
 	protected CommandParser() {
 		
@@ -34,7 +35,7 @@ public abstract class CommandParser extends Parser {
 		try {
 			peer.getTransporter().sendAsync(message);
 		} catch (final STPException exception) {
-			throw new NetworkingProtocolException(exception);
+			throw new CommandProtocolException(exception);
 		}
 	}
 	
@@ -50,7 +51,7 @@ public abstract class CommandParser extends Parser {
 		try {
 			peer.getTransporter().sendSync(message);
 		} catch (final STPException exception) {
-			throw new NetworkingProtocolException(exception);
+			throw new CommandProtocolException(exception);
 		}
 	}
 	
@@ -63,7 +64,7 @@ public abstract class CommandParser extends Parser {
 	
 	protected void read(final Peer peer, final Command command) {
 		if (readEvents.containsKey(command.getName())) {
-			readEvents.get(command.getName()).run();
+			readEvents.get(command.getName()).run(command);
 		}
 	}
 	
@@ -76,7 +77,7 @@ public abstract class CommandParser extends Parser {
 	
 	protected void written(final Peer peer, final Command command) {
 		if (writtenEvents.containsKey(command.getName())) {
-			writtenEvents.get(command.getName()).run();
+			writtenEvents.get(command.getName()).run(command);
 		}
 	}
 	
@@ -84,11 +85,11 @@ public abstract class CommandParser extends Parser {
 		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager("MMO"));
 	}
 	
-	protected void onRead(final String commandName, final Runnable runnable) {
-		readEvents.put(commandName, runnable);
+	protected void onRead(final String commandName, final CommandRunnable commandRunnable) {
+		readEvents.put(commandName, commandRunnable);
 	}
 	
-	protected void onWritten(final String commandName, final Runnable runnable) {
-		writtenEvents.put(commandName, runnable);
+	protected void onWritten(final String commandName, final CommandRunnable commandRunnable) {
+		writtenEvents.put(commandName, commandRunnable);
 	}
 }
