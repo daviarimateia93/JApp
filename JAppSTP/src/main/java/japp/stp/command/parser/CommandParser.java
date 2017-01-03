@@ -64,7 +64,7 @@ public abstract class CommandParser extends Parser {
 	
 	protected void read(final Peer peer, final Command command) {
 		if (readEvents.containsKey(command.getName())) {
-			readEvents.get(command.getName()).run(command);
+			readEvents.get(command.getName()).run(peer, command);
 		}
 	}
 	
@@ -77,7 +77,7 @@ public abstract class CommandParser extends Parser {
 	
 	protected void written(final Peer peer, final Command command) {
 		if (writtenEvents.containsKey(command.getName())) {
-			writtenEvents.get(command.getName()).run(command);
+			writtenEvents.get(command.getName()).run(peer, command);
 		}
 	}
 	
