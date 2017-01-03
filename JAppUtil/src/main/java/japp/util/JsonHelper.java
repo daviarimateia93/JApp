@@ -33,10 +33,13 @@ public abstract class JsonHelper {
 	}
 	
 	public static <T> T toObject(final String string, final Class<T> type) {
+		if (StringHelper.isNullOrBlank(string)) {
+			return null;
+		}
+		
 		try {
 			return getObjectMapper().readValue(string, type);
 		} catch (final IOException exception) {
-			exception.printStackTrace();
 			throw new JAppRuntimeException(exception);
 		}
 	}
