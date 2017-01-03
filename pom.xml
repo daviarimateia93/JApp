@@ -11,5 +11,6 @@
 		<module>JAppUtil</module>
 		<module>JAppTest</module>
 		<module>JAppWeb</module>
+		<module>JAppSTP</module>
 	</modules>
 </project>
