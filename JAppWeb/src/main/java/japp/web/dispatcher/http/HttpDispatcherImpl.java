@@ -1,7 +1,5 @@
 package japp.web.dispatcher.http;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import japp.model.ModelApp;
 import japp.util.ByteHelper;
+import japp.util.ExceptionHelper;
 import japp.util.JAppRuntimeException;
 import japp.util.Setable;
 import japp.util.SingletonFactory;
@@ -124,13 +123,9 @@ public class HttpDispatcherImpl implements Singletonable, HttpDispatcher {
 		contentStringBuilder.append(StringHelper.isNullOrEmpty(uncaughtExceptionMessage) ? "" : uncaughtExceptionMessage);
 		
 		if (httpStatusCode == 500) {
-			final StringWriter stringWriter = new StringWriter();
-			final PrintWriter printWriter = new PrintWriter(stringWriter);
-			
-			uncaughtException.printStackTrace(printWriter);
 			uncaughtException.printStackTrace();
 			
-			contentStringBuilder.append("\r\n" + stringWriter.toString());
+			contentStringBuilder.append("\r\n" + ExceptionHelper.getStackTraceAsString(uncaughtException));
 		}
 		
 		HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, httpStatusCode, "text/plain", ByteHelper.toBytes(contentStringBuilder.toString()));

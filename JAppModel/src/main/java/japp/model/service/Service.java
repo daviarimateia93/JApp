@@ -13,7 +13,7 @@ import japp.model.service.authorization.Authorizable;
 import japp.model.service.authorization.Authorization;
 import japp.model.service.authorization.Authorizer;
 import japp.model.service.authorization.ForbiddenException;
-import japp.model.service.authorization.Role;
+import japp.model.service.authorization.Rule;
 import japp.model.service.transaction.Transactionable;
 import japp.util.ProxyInterceptable;
 import japp.util.ProxyMethodWrapper;
@@ -67,7 +67,7 @@ public abstract class Service implements ProxyInterceptable {
 		repositoryFactory.executeInCurrentTransaction(runnable);
 	}
 	
-	protected boolean authorize(final Authorization authorization, final Role... roles) {
+	protected boolean authorize(final Authorization authorization, final Rule... rules) {
 		return true;
 	}
 	
@@ -119,14 +119,14 @@ public abstract class Service implements ProxyInterceptable {
 		if (authorization != null && authorize(authorization, authorizable.value())) {
 			return proxyMethodWrapper.invoke();
 		} else {
-			final Role[] roles = authorizable.value();
+			final Rule[] rules = authorizable.value();
 			final StringBuilder stringBuilder = new StringBuilder();
 			
-			for (final Role role : roles) {
-				stringBuilder.append(StringHelper.join(role.value(), " ,", ". "));
+			for (final Rule rule : rules) {
+				stringBuilder.append(StringHelper.join(rule.value(), " ,", ". "));
 			}
 			
-			throw new ForbiddenException(String.format("Access denied for method \"%s\" and roles \"%s\"", proxyMethodWrapper.getMethod().getName(), stringBuilder.toString()));
+			throw new ForbiddenException(String.format("Access denied for method \"%s\" and rules \"%s\"", proxyMethodWrapper.getMethod().getName(), stringBuilder.toString()));
 		}
 	}
 	
