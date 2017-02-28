@@ -33,7 +33,7 @@ public abstract class JPAHelper {
 					initialize(currentObject, visitedObjects);
 				}
 			} else if (ReflectionHelper.isArray(object)) {
-				for (final Object currentObject : (Object[]) object) {
+				for (final Object currentObject : ReflectionHelper.getObjectArray(object)) {
 					initialize(currentObject, visitedObjects);
 				}
 			} else if (object instanceof Entity) {

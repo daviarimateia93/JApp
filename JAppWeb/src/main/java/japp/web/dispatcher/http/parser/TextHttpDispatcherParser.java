@@ -3,11 +3,11 @@ package japp.web.dispatcher.http.parser;
 import japp.util.ByteHelper;
 import japp.web.exception.HttpException;
 
-public class TextPlainHttpDispatcherParser implements HttpDispatcherParser {
+public class TextHttpDispatcherParser implements HttpDispatcherParser {
 	
 	@Override
 	public String[] getContentTypes() {
-		return new String[] { "*/*", "text/plain", "text/html" };
+		return new String[] { "*/*", "text/plain", "text/html", "text/csv" };
 	}
 	
 	@Override
@@ -17,6 +17,12 @@ public class TextPlainHttpDispatcherParser implements HttpDispatcherParser {
 	
 	@Override
 	public byte[] parseOutgoing(final Object object) {
-		return object != null ? ByteHelper.toBytes(object.toString()) : null;
+		if (object == null) {
+			return null;
+		} else if (object instanceof byte[]) {
+			return (byte[]) object;
+		} else {
+			return ByteHelper.toBytes(object.toString());
+		}
 	}
 }

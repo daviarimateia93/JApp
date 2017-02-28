@@ -102,7 +102,7 @@ public class HttpDispatcherHandlerImpl implements Singletonable, HttpDispatcherH
 		} else if (!Void.TYPE.equals(method.getReturnType())) {
 			final String acceptContentType = httpServletRequest.getHeader("Accept");
 			final boolean useAcceptContentType = acceptContentType != null && !acceptContentType.equals("*/*");
-			final Setable<String> contentType = new Setable<>(useAcceptContentType ? acceptContentType : WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
+			final Setable<String> contentType = new Setable<>(httpServletResponse.getContentType() == null ? useAcceptContentType ? acceptContentType : WebApp.getWebAppConfiguration().getNonViewDefaultContentType() : httpServletResponse.getContentType());
 			final byte[] content = httpDispatcherParserManager.parseOutgoing(contentType, useAcceptContentType, methodReturnObject);
 			
 			HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, 200, contentType.getValue(), content);

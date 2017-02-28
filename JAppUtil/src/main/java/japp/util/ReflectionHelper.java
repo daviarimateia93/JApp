@@ -1,5 +1,6 @@
 package japp.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -383,5 +384,19 @@ public abstract class ReflectionHelper {
 	
 	public static <T> T forceNewInstance(final Class<T> type) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return forceNewInstance(type, new Class<?>[] {}, new Object[] {});
+	}
+	
+	public static Object[] getObjectArray(Object object) {
+		if (object instanceof Object[])
+			return (Object[]) object;
+		
+		final int length = Array.getLength(object);
+		final Object[] objects = new Object[length];
+		
+		for (int i = 0; i < length; ++i) {
+			objects[i] = Array.get(object, i);
+		}
+		
+		return objects;
 	}
 }
