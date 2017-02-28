@@ -18,7 +18,13 @@ public abstract class HttpDispatcherHelper {
 	public static boolean containsContentType(final String[] sourceContentTypes, final String... contentTypes) {
 		if (contentTypes != null && contentTypes.length > 0) {
 			for (final String contentType : contentTypes) {
-				if (containsContentType(sourceContentTypes, contentType)) {
+				final String contentTypeFirstPart = contentType.split(";")[0];
+				
+				if (contentTypeFirstPart.equals("*/*")) {
+					return true;
+				}
+				
+				if (containsContentType(sourceContentTypes, contentTypeFirstPart)) {
 					return true;
 				}
 			}

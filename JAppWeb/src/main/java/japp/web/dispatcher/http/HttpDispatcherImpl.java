@@ -142,11 +142,11 @@ public class HttpDispatcherImpl implements Singletonable, HttpDispatcher {
 		final Requestable rootRequestable = httpControllerClass.isAnnotationPresent(Requestable.class) ? httpControllerClass.getAnnotation(Requestable.class) : null;
 		
 		for (final Method method : httpControllerClass.getDeclaredMethods()) {
-			if (!Modifier.isPublic(method.getModifiers())) {
-				throw new JAppRuntimeException(String.format("%s must be public", method.getName()));
-			}
-			
 			if (method.isAnnotationPresent(Requestable.class)) {
+				if (!Modifier.isPublic(method.getModifiers())) {
+					throw new JAppRuntimeException(String.format("%s must be public", method.getName()));
+				}
+				
 				final Requestable requestable = method.getAnnotation(Requestable.class);
 				final RequestMethod[] requestMethods = requestable.method().length > 0 ? requestable.method() : rootRequestable.method();
 				
