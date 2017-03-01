@@ -64,6 +64,8 @@ public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispa
 		if (contentTypes != null && contentTypes.length > 0) {
 			for (String contentType : contentTypes) {
 				if (contentType != null) {
+					contentType = contentType.split(";")[0];
+					
 					final Matcher matcher = Pattern.compile("^(.*?)[; ].*$").matcher(contentType);
 					contentType = (matcher.find() ? matcher.groupCount() == 1 ? matcher.group(0) : matcher.group(1) : contentType);
 					
