@@ -2,6 +2,12 @@ package japp.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,9 +19,21 @@ public abstract class DateHelper {
 	private static final String EMPTY = "";
 	
 	public static String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
+	public static String TIME_FORMAT_PATTERN = "HH:mm:ss.SSS";
 	
 	protected DateHelper() {
 		
+	}
+	
+	public static LocalDateTime setTimeZone(final LocalDateTime localDateTime, final String timeZone) {
+		final ZoneId zoneId = ZoneId.of(timeZone);
+		
+		if (zoneId == null) {
+			return localDateTime;
+		} else {
+			return localDateTime.atZone(zoneId).toLocalDateTime();
+		}
 	}
 	
 	public static Date setTimeZone(final Date date, final String timeZone) {
@@ -27,15 +45,15 @@ public abstract class DateHelper {
 			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateHelper.DATE_TIME_FORMAT_PATTERN);
 			simpleDateFormat.setTimeZone(foundTimeZone);
 			
-			return parse(simpleDateFormat.format(date));
+			return parseDate(simpleDateFormat.format(date));
 		}
 	}
 	
-	public static Date parse(final String date) {
-		return parse(date, DATE_TIME_FORMAT_PATTERN);
+	public static Date parseDate(final String date) {
+		return parseDate(date, DATE_TIME_FORMAT_PATTERN);
 	}
 	
-	public static Date parse(final String date, final String pattern) {
+	public static Date parseDate(final String date, final String pattern) {
 		try {
 			return new SimpleDateFormat(pattern).parse(date);
 		} catch (final ParseException parseException) {
@@ -43,12 +61,72 @@ public abstract class DateHelper {
 		}
 	}
 	
-	public static String format(final Date date) {
-		return format(date, DATE_TIME_FORMAT_PATTERN);
+	public static String formatDate(final Date date) {
+		return formatDate(date, DATE_TIME_FORMAT_PATTERN);
 	}
 	
-	public static String format(final Date date, final String pattern) {
+	public static String formatDate(final Date date, final String pattern) {
 		return date == null ? EMPTY : new SimpleDateFormat(pattern).format(date);
+	}
+	
+	public static LocalDateTime parseLocalDateTime(final String localDateTime) {
+		return parseLocalDateTime(localDateTime, DATE_TIME_FORMAT_PATTERN);
+	}
+	
+	public static LocalDateTime parseLocalDateTime(final String localDateTime, final String pattern) {
+		try {
+			return LocalDateTime.parse(localDateTime, DateTimeFormatter.ofPattern(pattern));
+		} catch (final DateTimeParseException dateTimeParseException) {
+			return null;
+		}
+	}
+	
+	public static String formatLocalDateTime(final LocalDateTime localDateTime) {
+		return formatLocalDateTime(localDateTime, DATE_TIME_FORMAT_PATTERN);
+	}
+	
+	public static String formatLocalDateTime(final LocalDateTime localDateTime, final String pattern) {
+		return localDateTime.format(DateTimeFormatter.ofPattern(pattern));
+	}
+	
+	public static LocalDate parseLocalDate(final String localDate) {
+		return parseLocalDate(localDate, DATE_FORMAT_PATTERN);
+	}
+	
+	public static LocalDate parseLocalDate(final String localDate, final String pattern) {
+		try {
+			return LocalDate.parse(localDate, DateTimeFormatter.ofPattern(pattern));
+		} catch (final DateTimeParseException dateTimeParseException) {
+			return null;
+		}
+	}
+	
+	public static String formatLocalDate(final LocalDate localDate) {
+		return formatLocalDate(localDate, DATE_FORMAT_PATTERN);
+	}
+	
+	public static String formatLocalDate(final LocalDate localDate, final String pattern) {
+		return localDate.format(DateTimeFormatter.ofPattern(pattern));
+	}
+	
+	public static LocalTime parseLocalTime(final String localTIme) {
+		return parseLocalTime(localTIme, TIME_FORMAT_PATTERN);
+	}
+	
+	public static LocalTime parseLocalTime(final String localTime, final String pattern) {
+		try {
+			return LocalTime.parse(localTime, DateTimeFormatter.ofPattern(pattern));
+		} catch (final DateTimeParseException dateTimeParseException) {
+			return null;
+		}
+	}
+	
+	public static String formatLocalTime(final LocalTime localTIme) {
+		return formatLocalTime(localTIme, TIME_FORMAT_PATTERN);
+	}
+	
+	public static String formatLocalTime(final LocalTime localTime, final String pattern) {
+		return localTime.format(DateTimeFormatter.ofPattern(pattern));
 	}
 	
 	public static Calendar toCalendar(final Date date) {
