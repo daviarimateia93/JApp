@@ -15,7 +15,7 @@ import japp.util.StringHelper;
 public class Main {
 	public static void test(final String string) {
 		if (StringHelper.isNullOrBlank(string) || string.length() > 45) {
-			System.out.println("USER_ENTITY_NICKNAME_SHOULD_CONTAIN_UP_TO_45_CHARACTERS");
+			System.out.println("USER_ENTITY_NICKNAME_SHOULD_NOT_BE_EMPTY_AND_SHOULD_CONTAIN_UP_TO_45_CHARACTERS");
 		}
 	}
 	
