@@ -1,36 +1,24 @@
 package japp.job;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import japp.job.callable.CallableJob;
 import japp.job.runnable.RunnableJob;
-import japp.util.JAppRuntimeException;
-import japp.util.ReflectionHelper;
 import japp.util.SingletonFactory;
 import japp.util.Singletonable;
 
-public class JobFactoryImpl implements Singletonable, JobFactory {
+public class JobManagerImpl implements Singletonable, JobManager {
 	
 	protected final ScheduledExecutorService scheduledExecutorService;
 	
-	public static synchronized JobFactoryImpl getInstance() {
-		return SingletonFactory.getInstance(JobFactoryImpl.class);
+	public static synchronized JobManagerImpl getInstance() {
+		return SingletonFactory.getInstance(JobManagerImpl.class);
 	}
 	
-	protected JobFactoryImpl() {
+	protected JobManagerImpl() {
 		scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-	}
-	
-	@Override
-	public <T extends Job> T getJob(final Class<T> jobClass) {
-		try {
-			return ReflectionHelper.newInstance(jobClass);
-		} catch (final NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
-			throw new JAppRuntimeException(exception);
-		}
 	}
 	
 	@Override

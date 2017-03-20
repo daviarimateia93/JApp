@@ -5,9 +5,7 @@ import java.util.concurrent.TimeUnit;
 import japp.job.callable.CallableJob;
 import japp.job.runnable.RunnableJob;
 
-public interface JobFactory {
-	
-	public <T extends Job> T getJob(final Class<T> jobClass);
+public interface JobManager {
 	
 	public void schedule(final CallableJob<?> callableJob, final long delay, final TimeUnit timeUnit);
 	
