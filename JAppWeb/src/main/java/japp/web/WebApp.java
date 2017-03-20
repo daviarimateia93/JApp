@@ -7,7 +7,7 @@ import japp.model.ModelApp;
 import japp.model.service.Service;
 import japp.util.JAppRuntimeException;
 
-public class WebApp {
+public abstract class WebApp {
 	
 	private static WebAppConfiguration webAppConfiguration;
 	
