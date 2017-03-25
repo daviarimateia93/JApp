@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.persistence.Id;
 
-import japp.model.util.JPAHelper;
+import japp.model.util.JpaHelper;
 import japp.util.CloneHelper;
 import japp.util.JsonHelper;
 import japp.util.ReflectionHelper;
@@ -54,7 +54,7 @@ public abstract class Entity implements Serializable, Cloneable {
 	}
 	
 	public <T extends Entity> void merge(final T entity) {
-		JPAHelper.merge(entity, this);
+		JpaHelper.merge(entity, this);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ public abstract class Entity implements Serializable, Cloneable {
 	}
 	
 	public void initialize() {
-		JPAHelper.initialize(this);
+		JpaHelper.initialize(this);
 	}
 	
 	@Override

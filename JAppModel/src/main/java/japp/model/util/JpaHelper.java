@@ -14,9 +14,9 @@ import java.util.Set;
 import japp.model.entity.Entity;
 import japp.util.ReflectionHelper;
 
-public abstract class JPAHelper {
+public abstract class JpaHelper {
 	
-	protected JPAHelper() {
+	protected JpaHelper() {
 		
 	}
 	
