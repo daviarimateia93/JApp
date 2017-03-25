@@ -46,6 +46,10 @@ public abstract class Repository<T extends Entity, U> {
 		return criteriaQuery.select(root);
 	}
 	
+	protected TypedQuery<T> createTypedQuery() {
+		return createTypedQuery(createCriteriaQuery());
+	}
+	
 	@SuppressWarnings("hiding")
 	protected <T> TypedQuery<T> createTypedQuery(final CriteriaQuery<T> criteriaQuery) {
 		return entityManager.createQuery(criteriaQuery);
@@ -202,6 +206,13 @@ public abstract class Repository<T extends Entity, U> {
 	
 	public T find(final Predicate predicate) {
 		return entityManager.createQuery(createCriteriaQuery().where(predicate)).getSingleResult();
+	}
+	
+	public T findFirst() {
+		final TypedQuery<T> typedQuery = createTypedQuery();
+		typedQuery.setMaxResults(1);
+		
+		return getSingleResult(typedQuery);
 	}
 	
 	public List<T> findAll() {
