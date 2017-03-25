@@ -42,9 +42,14 @@ public abstract class WsController extends Endpoint implements Controller {
 		return proxyMethodWrapper.invoke();
 	}
 	
-	public void broadcast(final SessionRunnable sessionRunnable) {
+	@SuppressWarnings("unchecked")
+	public <T extends WsController> void broadcast(final SessionRunnable<T> sessionRunnable) {
 		for (final Session session : sessions) {
-			sessionRunnable.run(session);
+			try {
+				sessionRunnable.run((T) this, session);
+			} catch (final ClassCastException exception) {
+				sessionRunnable.run(null, session);
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@ package japp.web.controller.ws;
 
 import javax.websocket.Session;
 
-public interface SessionRunnable {
+public interface SessionRunnable <T extends WsController> {
 	
-	public void run(final Session session);
+	public void run(final T wsController, final Session session);
 }
