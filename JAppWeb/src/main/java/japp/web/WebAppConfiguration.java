@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.ServerApplicationConfig;
 
+import japp.web.controller.ws.WsControllerFactory;
 import japp.web.dispatcher.http.HttpDispatcher;
 
 public interface WebAppConfiguration extends ServerApplicationConfig {
@@ -24,6 +25,8 @@ public interface WebAppConfiguration extends ServerApplicationConfig {
 	public String getLayoutResolverSuffix();
 	
 	public HttpDispatcher getHttpDispatcher();
+	
+	public WsControllerFactory getWsControllerFactory();
 	
 	public String getNonViewDefaultContentType();
 	
