@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public abstract class JsonHelper {
 	
@@ -19,7 +21,7 @@ public abstract class JsonHelper {
 	}
 	
 	public static ObjectMapper getObjectMapper() {
-		return new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN)).registerModule(new Hibernate5Module()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
+		return new ObjectMapper().registerModule(new Hibernate5Module()).registerModule(new JavaTimeModule()).setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN)).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
 	}
 	
 	public static String toString(final Object object) {
