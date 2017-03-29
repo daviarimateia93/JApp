@@ -295,4 +295,11 @@ public abstract class DateHelper {
 	public static Long differenceInHours(final Date endDate, final Date startDate) {
 		return differenceInMinutes(endDate, startDate) / 60;
 	}
+	
+	public static Date add(final Date date, final int field, final int amount) {
+		final Calendar calendar = toCalendar(date);
+		calendar.add(field, amount);
+		
+		return calendar.getTime();
+	}
 }
