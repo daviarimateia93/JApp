@@ -31,11 +31,15 @@ public abstract class WebApp {
 		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass);
 	}
 	
-	public static <T extends Service> T getService(final HttpServletRequest httpServletRequest, final Class<T> serviceClass) {
-		return getService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass, final EntityManager entityManager) {
+		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, entityManager);
 	}
 	
-	public static <T extends Service> T getService(final Class<T> serviceClass, final EntityManager entityManager) {
-		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, entityManager);
+	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass) {
+		return getPersistenceService(serviceClass, (HttpServletRequest) null);
+	}
+	
+	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass, final HttpServletRequest httpServletRequest) {
+		return getPersistenceService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 	}
 }
