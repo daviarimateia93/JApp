@@ -16,8 +16,8 @@ import japp.util.Singletonable;
 
 public class RepositoryFactoryImpl implements Singletonable, RepositoryFactory {
 	
-	protected static final Map<String, EntityManagerFactory> entityManagerFactories = new HashMap<>();
-	protected static final ThreadLocal<Map<String, EntityManager>> entityManagers = new ThreadLocal<>();
+	private static final Map<String, EntityManagerFactory> entityManagerFactories = new HashMap<>();
+	private static final ThreadLocal<Map<String, EntityManager>> entityManagers = new ThreadLocal<>();
 	
 	public static synchronized RepositoryFactoryImpl getInstance() {
 		return SingletonFactory.getInstance(RepositoryFactoryImpl.class);
@@ -25,6 +25,14 @@ public class RepositoryFactoryImpl implements Singletonable, RepositoryFactory {
 	
 	protected RepositoryFactoryImpl() {
 		
+	}
+	
+	protected static Map<String, EntityManagerFactory> getEntityManagerFactories() {
+		return entityManagerFactories;
+	}
+	
+	protected static ThreadLocal<Map<String, EntityManager>> getEntityManagers() {
+		return entityManagers;
 	}
 	
 	@Override

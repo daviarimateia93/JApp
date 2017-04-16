@@ -22,8 +22,6 @@ import japp.util.ByteHelper;
 import japp.util.DateHelper;
 import japp.util.ReflectionHelper;
 import japp.util.Setable;
-import japp.util.SingletonFactory;
-import japp.util.Singletonable;
 import japp.util.StringHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
@@ -38,25 +36,18 @@ import japp.web.dispatcher.http.request.RequestMapping;
 import japp.web.exception.HttpException;
 import japp.web.view.View;
 
-public class HttpDispatcherHandlerImpl implements Singletonable, HttpDispatcherHandler {
+public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
 	public static String DATE_TIME_FORMAT_PATTERN = DateHelper.DATE_TIME_FORMAT_PATTERN;
 	
-	protected HttpDispatcherParserManager httpDispatcherParserManager;
+	private final HttpDispatcherParserManager httpDispatcherParserManager;
 	
-	public static synchronized HttpDispatcherHandlerImpl getInstance() {
-		return SingletonFactory.getInstance(HttpDispatcherHandlerImpl.class);
+	public HttpDispatcherHandlerImpl() {
+		this(HttpDispatcherParserManagerImpl.getInstance());
 	}
 	
-	public static synchronized HttpDispatcherHandlerImpl getInstance(final HttpDispatcherParserManager httpDispatcherParserManager) {
-		final HttpDispatcherHandlerImpl instance = getInstance();
-		instance.httpDispatcherParserManager = httpDispatcherParserManager;
-		
-		return instance;
-	}
-	
-	protected HttpDispatcherHandlerImpl() {
-		this.httpDispatcherParserManager = HttpDispatcherParserManagerImpl.getInstance();
+	public HttpDispatcherHandlerImpl(final HttpDispatcherParserManager httpDispatcherParserManager) {
+		this.httpDispatcherParserManager = httpDispatcherParserManager;
 	}
 	
 	@Override

@@ -18,10 +18,14 @@ import japp.web.controller.Controller;
 
 public abstract class WsController extends Endpoint implements Controller {
 	
-	protected static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 	
 	protected WsController() {
 		
+	}
+	
+	protected static Set<Session> getSessions() {
+		return sessions;
 	}
 	
 	public abstract String getEndpointPath();

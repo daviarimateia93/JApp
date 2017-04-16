@@ -16,8 +16,6 @@ import japp.util.ByteHelper;
 import japp.util.ExceptionHelper;
 import japp.util.JAppRuntimeException;
 import japp.util.Setable;
-import japp.util.SingletonFactory;
-import japp.util.Singletonable;
 import japp.util.StringHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
@@ -33,34 +31,38 @@ import japp.web.uri.UriCompilation;
 import japp.web.uri.UriCompiler;
 import japp.web.uri.UriCompilerImpl;
 
-public class HttpDispatcherImpl implements Singletonable, HttpDispatcher {
+public class HttpDispatcherImpl implements HttpDispatcher {
 	
-	protected final Map<String, RequestMapping> requestMappings;
-	protected UriCompiler uriCompiler;
-	protected HttpControllerFactory httpControllerFactory;
-	protected HttpDispatcherHandler httpDispatcherHandler;
+	private final Map<String, RequestMapping> requestMappings;
+	private final UriCompiler uriCompiler;
+	private final HttpControllerFactory httpControllerFactory;
+	private final HttpDispatcherHandler httpDispatcherHandler;
 	
-	public static synchronized HttpDispatcherImpl getInstance() {
-		return SingletonFactory.getInstance(HttpDispatcherImpl.class);
+	public HttpDispatcherImpl() {
+		this(UriCompilerImpl.getInstance(), HttpControllerFactoryImpl.getInstance(), new HttpDispatcherHandlerImpl());
 	}
 	
-	protected HttpDispatcherImpl() {
+	public HttpDispatcherImpl(final UriCompiler uriCompiler, final HttpControllerFactory httpControllerFactory, final HttpDispatcherHandler httpDispatcherHandler) {
 		this.requestMappings = new HashMap<>();
-		this.uriCompiler = UriCompilerImpl.getInstance();
-		this.httpControllerFactory = HttpControllerFactoryImpl.getInstance();
-		this.httpDispatcherHandler = HttpDispatcherHandlerImpl.getInstance();
-	}
-	
-	public void setUriCompiler(final UriCompiler uriCompiler) {
 		this.uriCompiler = uriCompiler;
-	}
-	
-	public void setHttpControllerFactory(final HttpControllerFactory httpControllerFactory) {
 		this.httpControllerFactory = httpControllerFactory;
+		this.httpDispatcherHandler = httpDispatcherHandler;
 	}
 	
-	public void setHttpDispatcherHandler(final HttpDispatcherHandler httpDispatcherHandler) {
-		this.httpDispatcherHandler = httpDispatcherHandler;
+	protected Map<String, RequestMapping> getRequestMappings() {
+		return requestMappings;
+	}
+	
+	protected UriCompiler getUriCompiler() {
+		return uriCompiler;
+	}
+	
+	protected HttpControllerFactory getHttpControllerFactory() {
+		return httpControllerFactory;
+	}
+	
+	protected HttpDispatcherHandler getHttpDispatcherHandler() {
+		return httpDispatcherHandler;
 	}
 	
 	@Override

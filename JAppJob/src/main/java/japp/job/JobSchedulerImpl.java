@@ -9,15 +9,15 @@ import japp.job.runnable.RunnableJob;
 import japp.util.SingletonFactory;
 import japp.util.Singletonable;
 
-public class JobManagerImpl implements Singletonable, JobManager {
+public class JobSchedulerImpl implements Singletonable, JobScheduler {
 	
 	protected final ScheduledExecutorService scheduledExecutorService;
 	
-	public static synchronized JobManagerImpl getInstance() {
-		return SingletonFactory.getInstance(JobManagerImpl.class);
+	public static synchronized JobSchedulerImpl getInstance() {
+		return SingletonFactory.getInstance(JobSchedulerImpl.class);
 	}
 	
-	protected JobManagerImpl() {
+	protected JobSchedulerImpl() {
 		scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 	}
 	

@@ -8,9 +8,9 @@ import japp.model.repository.RepositoryFactory;
 
 public abstract class Business {
 	
-	protected final BusinessFactory businessFactory;
-	protected final RepositoryFactory repositoryFactory;
-	protected final EntityManager entityManager;
+	private final BusinessFactory businessFactory;
+	private final RepositoryFactory repositoryFactory;
+	private final EntityManager entityManager;
 	
 	protected Business() {
 		this((EntityManager) null);
@@ -24,6 +24,18 @@ public abstract class Business {
 		this.businessFactory = businessFactory;
 		this.repositoryFactory = repositoryFactory;
 		this.entityManager = entityManager;
+	}
+	
+	protected BusinessFactory getBusinessFactory() {
+		return businessFactory;
+	}
+	
+	protected RepositoryFactory getRepositoryFactory() {
+		return repositoryFactory;
+	}
+	
+	protected EntityManager getEntityManager() {
+		return entityManager;
 	}
 	
 	protected <T extends Business> T getBusiness(final Class<T> businessClass) {

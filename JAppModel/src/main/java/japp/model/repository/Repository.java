@@ -22,12 +22,20 @@ import japp.util.JAppRuntimeException;
 
 public abstract class Repository<T extends Entity, U> {
 	
-	protected final Class<T> domainClass;
-	protected final EntityManager entityManager;
+	private final Class<T> domainClass;
+	private final EntityManager entityManager;
 	
 	protected Repository(final Class<T> domainClass, final EntityManager entityManager) {
 		this.domainClass = domainClass;
 		this.entityManager = entityManager;
+	}
+	
+	protected Class<T> getDomainClass() {
+		return domainClass;
+	}
+	
+	protected EntityManager getEntityManager() {
+		return entityManager;
 	}
 	
 	protected CriteriaBuilder getCriteriaBuilder() {
