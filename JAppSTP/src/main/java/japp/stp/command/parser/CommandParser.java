@@ -3,8 +3,6 @@ package japp.stp.command.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import japp.model.ModelApp;
-import japp.model.service.Service;
 import japp.stp.command.Command;
 import japp.stp.command.exception.CommandProtocolException;
 import japp.stp.command.protocol.CommanProtocol;
@@ -79,10 +77,6 @@ public abstract class CommandParser extends Parser {
 		if (writtenEvents.containsKey(command.getName())) {
 			writtenEvents.get(command.getName()).run(peer, command);
 		}
-	}
-	
-	protected <T extends Service> T getService(final Class<T> serviceClass) {
-		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager("MMO"));
 	}
 	
 	protected void onRead(final String commandName, final CommandRunnable commandRunnable) {

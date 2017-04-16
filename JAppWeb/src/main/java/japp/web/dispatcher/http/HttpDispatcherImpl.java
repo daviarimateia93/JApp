@@ -86,9 +86,9 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 				final Thread thread = new Thread() {
 					public void run() {
 						try {
-							entityManager.setValue(ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+							entityManager.setValue(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 							
-							ModelApp.getModelAppConfiguration().getRepositoryFactory().executeInNewTransaction(entityManager.getValue(), runnable);
+							ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.getValue(), runnable);
 							
 							if (entityManager.getValue().isOpen()) {
 								entityManager.getValue().close();

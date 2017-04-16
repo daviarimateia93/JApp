@@ -30,8 +30,8 @@ public class HttpDispatcherServlet extends HttpServlet implements ServletContext
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
-		if (ModelApp.getModelAppConfiguration().getRepositoryFactory() != null) {
-			ModelApp.getModelAppConfiguration().getRepositoryFactory().closeEntityManagerFactory();
+		if (ModelApp.getModelAppConfiguration().getRepositoryManager() != null) {
+			ModelApp.getModelAppConfiguration().getRepositoryManager().closeEntityManagerFactory();
 		}
 	}
 	

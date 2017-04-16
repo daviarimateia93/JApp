@@ -40,6 +40,6 @@ public abstract class WebApp {
 	}
 	
 	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass, final HttpServletRequest httpServletRequest) {
-		return getPersistenceService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryFactory().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+		return getPersistenceService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 	}
 }

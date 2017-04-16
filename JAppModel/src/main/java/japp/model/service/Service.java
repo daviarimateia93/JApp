@@ -9,6 +9,7 @@ import japp.model.ModelApp;
 import japp.model.business.Business;
 import japp.model.business.BusinessFactory;
 import japp.model.repository.RepositoryFactory;
+import japp.model.repository.RepositoryManager;
 import japp.model.service.authorization.Authorizable;
 import japp.model.service.authorization.Authorization;
 import japp.model.service.authorization.Authorizer;
@@ -23,6 +24,7 @@ public abstract class Service implements ProxyInterceptable {
 	
 	private final BusinessFactory businessFactory;
 	private final RepositoryFactory repositoryFactory;
+	private final RepositoryManager repositoryManager;
 	private final EntityManager entityManager;
 	
 	protected Service() {
@@ -30,12 +32,13 @@ public abstract class Service implements ProxyInterceptable {
 	}
 	
 	protected Service(final EntityManager entityManager) {
-		this(ModelApp.getModelAppConfiguration().getBusinessFactory(), ModelApp.getModelAppConfiguration().getRepositoryFactory(), entityManager);
+		this(ModelApp.getModelAppConfiguration().getBusinessFactory(), ModelApp.getModelAppConfiguration().getRepositoryFactory(), ModelApp.getModelAppConfiguration().getRepositoryManager(), entityManager);
 	}
 	
-	protected Service(final BusinessFactory businessFactory, final RepositoryFactory repositoryFactory, final EntityManager entityManager) {
+	protected Service(final BusinessFactory businessFactory, final RepositoryFactory repositoryFactory, final RepositoryManager repositoryManager, final EntityManager entityManager) {
 		this.businessFactory = businessFactory;
 		this.repositoryFactory = repositoryFactory;
+		this.repositoryManager = repositoryManager;
 		this.entityManager = entityManager;
 	}
 	
@@ -47,6 +50,10 @@ public abstract class Service implements ProxyInterceptable {
 		return repositoryFactory;
 	}
 	
+	protected RepositoryManager getRepositoryManager() {
+		return repositoryManager;
+	}
+	
 	protected EntityManager getEntityManager() {
 		return entityManager;
 	}
@@ -56,27 +63,27 @@ public abstract class Service implements ProxyInterceptable {
 	}
 	
 	protected <T> T executeInCurrentOrNewTransaction(final Callable<T> callable) {
-		return repositoryFactory.executeInCurrentOrNewTransaction(entityManager, callable);
+		return repositoryManager.executeInCurrentOrNewTransaction(entityManager, callable);
 	}
 	
 	protected void executeInCurrentOrNewTransaction(final Runnable runnable) {
-		repositoryFactory.executeInCurrentOrNewTransaction(entityManager, runnable);
+		repositoryManager.executeInCurrentOrNewTransaction(entityManager, runnable);
 	}
 	
 	protected <T> T executeInNewTransaction(final Callable<T> callable) {
-		return repositoryFactory.executeInNewTransaction(entityManager, callable);
+		return repositoryManager.executeInNewTransaction(entityManager, callable);
 	}
 	
 	protected void executeInNewTransaction(final Runnable runnable) {
-		repositoryFactory.executeInNewTransaction(entityManager, runnable);
+		repositoryManager.executeInNewTransaction(entityManager, runnable);
 	}
 	
 	protected <T> T executeInCurrentTransaction(final Callable<T> callable) {
-		return repositoryFactory.executeInCurrentTransaction(callable);
+		return repositoryManager.executeInCurrentTransaction(callable);
 	}
 	
 	protected void executeInCurrentTransaction(final Runnable runnable) {
-		repositoryFactory.executeInCurrentTransaction(runnable);
+		repositoryManager.executeInCurrentTransaction(runnable);
 	}
 	
 	protected boolean authorize(final Authorization authorization, final Rule... rules) {
