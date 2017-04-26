@@ -253,16 +253,16 @@ public abstract class Repository<T extends Entity, U> {
 	}
 	
 	public PageResult<Map<String, Object>> search(final List<String> selections, final String fromQueryString, final String sortQueryString, final int firstResult, final int maxResults, final Object... parameters) {
-		return search(selections, fromQueryString, "1=1", sortQueryString, firstResult, maxResults, parameters);
+		return search(selections, fromQueryString, null, sortQueryString, firstResult, maxResults, parameters);
 	}
 	
-	public PageResult<Map<String, Object>> search(final List<String> selections, final String fromQueryString, final String criteriaQueryString, final String sortQueryString, final int firstResult, final int maxResults, final Object... parameters) {
+	public PageResult<Map<String, Object>> search(final List<String> selections, final String fromQueryString, final List<String> criteriaQuery, final String sortQueryString, final int firstResult, final int maxResults, final Object... parameters) {
 		if (selections == null || selections.isEmpty()) {
 			throw new JAppRuntimeException("SELECTIONS_SHOULD_NOT_BE_EMPTY");
 		}
 		
 		final String selectionsQueryString = String.join(", ", selections);
-		final String compiledCriteriaQueryString = (criteriaQueryString == null || criteriaQueryString.isEmpty() ? "" : " WHERE " + criteriaQueryString);
+		final String compiledCriteriaQueryString = (criteriaQuery == null || criteriaQuery.isEmpty() ? "" : " WHERE " + String.join(" ", criteriaQuery));
 		final String compiledSortQueryString = (sortQueryString == null || sortQueryString.isEmpty() ? "" : " ORDER BY " + sortQueryString);
 		final String countQueryString = "SELECT COUNT(*) FROM " + fromQueryString + compiledCriteriaQueryString;
 		final TypedQuery<Long> countTypedQuery = createTypedQuery(Long.class, countQueryString, parameters);
