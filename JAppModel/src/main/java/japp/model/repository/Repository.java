@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -210,6 +211,10 @@ public abstract class Repository<T extends Entity, U> {
 	
 	public T get(final U id) {
 		return entityManager.find(domainClass, id);
+	}
+	
+	public T get(final U id, final LockModeType lockModeType) {
+		return entityManager.find(domainClass, id, lockModeType);
 	}
 	
 	public T find(final Predicate predicate) {
