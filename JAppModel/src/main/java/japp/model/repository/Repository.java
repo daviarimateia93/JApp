@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -20,6 +21,7 @@ import japp.model.entity.Entity;
 import japp.model.repository.search.PageResult;
 import japp.model.repository.search.SelectionWrapper;
 import japp.util.JAppRuntimeException;
+import japp.util.Setable;
 
 public abstract class Repository<T extends Entity, U> {
 	
@@ -47,10 +49,23 @@ public abstract class Repository<T extends Entity, U> {
 		return createCriteriaQuery(domainClass);
 	}
 	
+	protected CriteriaQuery<T> createCriteriaQuery(final Setable<Root<T>> returnRoot) {
+		return createCriteriaQuery(domainClass, returnRoot);
+	}
+	
 	@SuppressWarnings("hiding")
 	protected <T> CriteriaQuery<T> createCriteriaQuery(final Class<T> domainClass) {
+		return createCriteriaQuery(domainClass, null);
+	}
+	
+	@SuppressWarnings("hiding")
+	protected <T> CriteriaQuery<T> createCriteriaQuery(final Class<T> domainClass, final Setable<Root<T>> returnRoot) {
 		final CriteriaQuery<T> criteriaQuery = getCriteriaBuilder().createQuery(domainClass);
 		final Root<T> root = criteriaQuery.from(domainClass);
+		
+		if (returnRoot != null) {
+			returnRoot.setValue(root);
+		}
 		
 		return criteriaQuery.select(root);
 	}
@@ -219,6 +234,17 @@ public abstract class Repository<T extends Entity, U> {
 	
 	public T find(final Predicate predicate) {
 		return entityManager.createQuery(createCriteriaQuery().where(predicate)).getSingleResult();
+	}
+	
+	public T findAny() {
+		final long count = count();
+		final long randomFirstResult = ThreadLocalRandom.current().nextLong(0, count);
+		
+		final TypedQuery<T> typedQuery = createTypedQuery();
+		typedQuery.setFirstResult((int) randomFirstResult);
+		typedQuery.setMaxResults(1);
+		
+		return getSingleResult(typedQuery);
 	}
 	
 	public T findFirst() {
