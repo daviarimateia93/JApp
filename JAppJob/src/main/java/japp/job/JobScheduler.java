@@ -7,6 +7,12 @@ import japp.job.runnable.RunnableJob;
 
 public interface JobScheduler {
 	
+	public void shutdown();
+	
+	public void shutdownNow();
+	
+	public void awaitTermination(final Long timeout, final TimeUnit timeUnit) throws InterruptedException;
+	
 	public void schedule(final CallableJob<?> callableJob, final long delay, final TimeUnit timeUnit);
 	
 	public void schedule(final RunnableJob runnableJob, final long delay, final TimeUnit timeUnit);

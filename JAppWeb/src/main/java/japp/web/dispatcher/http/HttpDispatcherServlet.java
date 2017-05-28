@@ -33,6 +33,8 @@ public class HttpDispatcherServlet extends HttpServlet implements ServletContext
 		if (ModelApp.getModelAppConfiguration().getRepositoryManager() != null) {
 			ModelApp.getModelAppConfiguration().getRepositoryManager().closeEntityManagerFactory();
 		}
+		
+		WebApp.getWebAppConfiguration().end();
 	}
 	
 	@Override

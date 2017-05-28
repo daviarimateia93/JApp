@@ -12,6 +12,8 @@ public interface WebAppConfiguration extends ServerApplicationConfig {
 	
 	public void init();
 	
+	public void end();
+	
 	public String getAppName();
 	
 	public String getAppVersion();

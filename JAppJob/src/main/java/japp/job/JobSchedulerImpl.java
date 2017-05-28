@@ -22,6 +22,21 @@ public class JobSchedulerImpl implements Singletonable, JobScheduler {
 	}
 	
 	@Override
+	public void shutdown() {
+		scheduledExecutorService.shutdown();
+	}
+	
+	@Override
+	public void shutdownNow() {
+		scheduledExecutorService.shutdownNow();
+	}
+	
+	@Override
+	public void awaitTermination(final Long timeout, final TimeUnit timeUnit) throws InterruptedException {
+		scheduledExecutorService.awaitTermination(timeout, timeUnit);
+	}
+	
+	@Override
 	public void schedule(final CallableJob<?> callableJob, final long delay, final TimeUnit timeUnit) {
 		scheduledExecutorService.schedule(callableJob, delay, timeUnit);
 	}
