@@ -1,4 +1,4 @@
-package japp.model.repository;
+package japp.model.jpa.repository;
 
 import javax.persistence.EntityManager;
 

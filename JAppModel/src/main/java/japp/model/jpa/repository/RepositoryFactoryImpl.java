@@ -1,4 +1,4 @@
-package japp.model.repository;
+package japp.model.jpa.repository;
 
 import java.lang.reflect.InvocationTargetException;
 

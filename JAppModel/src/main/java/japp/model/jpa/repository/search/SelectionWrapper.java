@@ -1,4 +1,4 @@
-package japp.model.repository.search;
+package japp.model.jpa.repository.search;
 
 import javax.persistence.criteria.Selection;
 

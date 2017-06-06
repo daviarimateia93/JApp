@@ -2,7 +2,7 @@ package japp.test;
 
 import javax.persistence.EntityManager;
 
-import japp.model.repository.Repository;
+import japp.model.jpa.repository.Repository;
 
 public class SampleRepository extends Repository<SampleEntity, Long> {
 	
