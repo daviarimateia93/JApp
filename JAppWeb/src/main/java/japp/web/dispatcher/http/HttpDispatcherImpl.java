@@ -82,7 +82,6 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 			};
 			
 			if (isOpenSessionView) {
-				
 				final Thread thread = new Thread() {
 					public void run() {
 						try {
