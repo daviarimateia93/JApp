@@ -1,6 +1,6 @@
 package japp.job.runnable;
 
-public abstract class SingleRunnableJob extends RunnableJob {
+public abstract class SingleRunnableJob implements RunnableJob {
 	
 	private boolean ran = false;
 	

@@ -1,8 +1,5 @@
 package japp.job.runnable;
 
-public abstract class RunnableJob implements Runnable {
+public interface RunnableJob extends Runnable {
 	
-	protected RunnableJob() {
-		
-	}
 }

@@ -1,6 +1,6 @@
 package japp.job.callable;
 
-public abstract class SingleCallableJob<T> extends CallableJob<T> {
+public abstract class SingleCallableJob<T> implements CallableJob<T> {
 	
 	private boolean called = false;
 	
