@@ -2,11 +2,11 @@ package japp.job.runnable;
 
 public abstract class SingleRunnableJob extends RunnableJob {
 	
+	private boolean ran = false;
+	
 	protected SingleRunnableJob() {
 		
 	}
-	
-	private boolean ran = false;
 	
 	protected abstract void runOnce();
 	

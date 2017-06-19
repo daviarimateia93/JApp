@@ -2,11 +2,11 @@ package japp.job.callable;
 
 public abstract class SingleCallableJob<T> extends CallableJob<T> {
 	
+	private boolean called = false;
+	
 	protected SingleCallableJob() {
 		
 	}
-	
-	private boolean called = false;
 	
 	protected abstract T callOnce();
 	
@@ -15,9 +15,9 @@ public abstract class SingleCallableJob<T> extends CallableJob<T> {
 		if (!called) {
 			called = true;
 			
-			callOnce();
+			return callOnce();
 		}
 		
-		return (T) null;
+		return null;
 	}
 }
