@@ -1,4 +1,4 @@
-package japp.model.jpa.repository.search;
+package japp.model.repository.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;

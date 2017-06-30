@@ -1,4 +1,4 @@
-package japp.model.jpa.repository;
+package japp.model.repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +22,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import japp.model.entity.Entity;
-import japp.model.jpa.repository.search.PageResult;
-import japp.model.jpa.repository.search.SelectionWrapper;
+import japp.model.repository.search.PageResult;
+import japp.model.repository.search.SelectionWrapper;
 import japp.util.DateHelper;
 import japp.util.JAppRuntimeException;
 import japp.util.Setable;

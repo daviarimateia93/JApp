@@ -1,4 +1,4 @@
-package japp.model.jpa.repository;
+package japp.model.repository;
 
 import java.util.HashMap;
 import java.util.Map;

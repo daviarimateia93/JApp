@@ -3,8 +3,8 @@ package japp.model.business;
 import javax.persistence.EntityManager;
 
 import japp.model.ModelApp;
-import japp.model.jpa.repository.Repository;
-import japp.model.jpa.repository.RepositoryFactory;
+import japp.model.repository.Repository;
+import japp.model.repository.RepositoryFactory;
 
 public abstract class Business {
 	
