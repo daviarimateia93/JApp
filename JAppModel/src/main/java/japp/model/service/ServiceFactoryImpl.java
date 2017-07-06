@@ -2,7 +2,6 @@ package japp.model.service;
 
 import javax.persistence.EntityManager;
 
-import japp.util.Proxy;
 import japp.util.SingletonFactory;
 import japp.util.Singletonable;
 
@@ -18,11 +17,11 @@ public class ServiceFactoryImpl implements Singletonable, ServiceFactory {
 	
 	@Override
 	public <T extends Service> T getService(final Class<T> serviceClass) {
-		return Proxy.intercept(serviceClass);
+		return SingletonFactory.getProxyInterceptableInstancePerThread(serviceClass);
 	}
 	
 	@Override
 	public <T extends Service> T getService(final Class<T> serviceClass, final EntityManager entityManager) {
-		return Proxy.intercept(serviceClass, new Class<?>[] { EntityManager.class }, entityManager);
+		return SingletonFactory.getProxyInterceptableInstancePerThread(serviceClass, new Class<?>[] { EntityManager.class }, entityManager);
 	}
 }

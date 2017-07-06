@@ -97,6 +97,7 @@ public class SingletonFactory {
 			if (instancesPerThread.get().containsKey(instanceClass)) {
 				return (T) instancesPerThread.get().get(instanceClass);
 			} else {
+				instancesPerThread.get().put(instanceClass, null);
 				T instance = callable.call();
 				instancesPerThread.get().put(instanceClass, instance);
 				

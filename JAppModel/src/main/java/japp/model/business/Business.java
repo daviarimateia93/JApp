@@ -5,8 +5,9 @@ import javax.persistence.EntityManager;
 import japp.model.ModelApp;
 import japp.model.repository.Repository;
 import japp.model.repository.RepositoryFactory;
+import japp.util.Singletonable;
 
-public abstract class Business {
+public abstract class Business implements Singletonable {
 	
 	private final BusinessFactory businessFactory;
 	private final RepositoryFactory repositoryFactory;

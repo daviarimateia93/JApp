@@ -18,9 +18,10 @@ import japp.model.service.authorization.Rule;
 import japp.model.service.transaction.Transactionable;
 import japp.util.ProxyInterceptable;
 import japp.util.ProxyMethodWrapper;
+import japp.util.Singletonable;
 import japp.util.StringHelper;
 
-public abstract class Service implements ProxyInterceptable {
+public abstract class Service implements Singletonable, ProxyInterceptable {
 	
 	private final BusinessFactory businessFactory;
 	private final RepositoryFactory repositoryFactory;

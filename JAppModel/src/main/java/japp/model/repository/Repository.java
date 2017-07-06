@@ -27,8 +27,9 @@ import japp.model.repository.search.SelectionWrapper;
 import japp.util.DateHelper;
 import japp.util.JAppRuntimeException;
 import japp.util.Setable;
+import japp.util.Singletonable;
 
-public abstract class Repository<T extends Entity, U> {
+public abstract class Repository<T extends Entity, U> implements Singletonable {
 	
 	private final Class<T> domainClass;
 	private final EntityManager entityManager;
