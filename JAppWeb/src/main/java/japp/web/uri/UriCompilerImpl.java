@@ -14,7 +14,7 @@ public class UriCompilerImpl implements Singletonable, UriCompiler {
 	public static final String PATTERN_VARIABLE = "\\{(.+?)\\}";
 	
 	public static synchronized UriCompilerImpl getInstance() {
-		return SingletonFactory.getInstance(UriCompilerImpl.class);
+		return SingletonFactory.getInstance(UriCompilerImpl.class).get();
 	}
 	
 	protected UriCompilerImpl() {

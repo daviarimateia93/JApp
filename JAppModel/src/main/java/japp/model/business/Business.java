@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import japp.model.ModelApp;
 import japp.model.repository.Repository;
 import japp.model.repository.RepositoryFactory;
+import japp.util.Reference;
 import japp.util.Singletonable;
 
 public abstract class Business implements Singletonable {
@@ -39,11 +40,11 @@ public abstract class Business implements Singletonable {
 		return entityManager;
 	}
 	
-	protected <T extends Business> T getBusiness(final Class<T> businessClass) {
+	protected <T extends Business> Reference<T> getBusiness(final Class<T> businessClass) {
 		return businessFactory.getBusiness(businessClass, entityManager);
 	}
 	
-	protected <T extends Repository<?, ?>> T getRepository(final Class<T> repositoryClass) {
+	protected <T extends Repository<?, ?>> Reference<T> getRepository(final Class<T> repositoryClass) {
 		return repositoryFactory.getRepository(repositoryClass, entityManager);
 	}
 }

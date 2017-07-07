@@ -1,26 +1,23 @@
 package japp.util;
 
-public class Setable<T> {
+public class Reference<T> {
 	
 	private T value;
 	
-	public T defaultValue() {
-		return null;
+	
+	public Reference() {
+		
 	}
 	
-	public Setable() {
-		value = defaultValue();
-	}
-	
-	public Setable(T value) {
+	public Reference(T value) {
 		this.value = value;
 	}
 	
-	public T getValue() {
+	public T get() {
 		return value;
 	}
 	
-	public void setValue(final T value) {
+	public void set(final T value) {
 		this.value = value;
 	}
 	

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import japp.model.ModelApp;
 import japp.model.service.Service;
 import japp.util.JAppRuntimeException;
+import japp.util.Reference;
 
 public abstract class WebApp {
 	
@@ -27,19 +28,19 @@ public abstract class WebApp {
 		WebApp.webAppConfiguration = webAppConfiguration;
 	}
 	
-	public static <T extends Service> T getService(final Class<T> serviceClass) {
+	public static <T extends Service> Reference<T> getService(final Class<T> serviceClass) {
 		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass);
 	}
 	
-	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass, final EntityManager entityManager) {
+	public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass, final EntityManager entityManager) {
 		return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, entityManager);
 	}
 	
-	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass) {
+	public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass) {
 		return getPersistenceService(serviceClass, (HttpServletRequest) null);
 	}
 	
-	public static <T extends Service> T getPersistenceService(final Class<T> serviceClass, final HttpServletRequest httpServletRequest) {
+	public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass, final HttpServletRequest httpServletRequest) {
 		return getPersistenceService(serviceClass, ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 	}
 }

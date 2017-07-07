@@ -18,6 +18,7 @@ import japp.model.service.authorization.Rule;
 import japp.model.service.transaction.Transactionable;
 import japp.util.ProxyInterceptable;
 import japp.util.ProxyMethodWrapper;
+import japp.util.Reference;
 import japp.util.Singletonable;
 import japp.util.StringHelper;
 
@@ -59,7 +60,7 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
 		return entityManager;
 	}
 	
-	protected <T extends Business> T getBusiness(final Class<T> businessClass) {
+	protected <T extends Business> Reference<T> getBusiness(final Class<T> businessClass) {
 		return entityManager == null ? businessFactory.getBusiness(businessClass) : businessFactory.getBusiness(businessClass, entityManager);
 	}
 	

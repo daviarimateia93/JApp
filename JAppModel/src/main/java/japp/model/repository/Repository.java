@@ -26,7 +26,7 @@ import japp.model.repository.search.PageResult;
 import japp.model.repository.search.SelectionWrapper;
 import japp.util.DateHelper;
 import japp.util.JAppRuntimeException;
-import japp.util.Setable;
+import japp.util.Reference;
 import japp.util.Singletonable;
 
 public abstract class Repository<T extends Entity, U> implements Singletonable {
@@ -55,7 +55,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return createCriteriaQuery(domainClass);
 	}
 	
-	protected CriteriaQuery<T> createCriteriaQuery(final Setable<Root<T>> returnRoot) {
+	protected CriteriaQuery<T> createCriteriaQuery(final Reference<Root<T>> returnRoot) {
 		return createCriteriaQuery(domainClass, returnRoot);
 	}
 	
@@ -65,12 +65,12 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	}
 	
 	@SuppressWarnings("hiding")
-	protected <T> CriteriaQuery<T> createCriteriaQuery(final Class<T> domainClass, final Setable<Root<T>> returnRoot) {
+	protected <T> CriteriaQuery<T> createCriteriaQuery(final Class<T> domainClass, final Reference<Root<T>> returnRoot) {
 		final CriteriaQuery<T> criteriaQuery = getCriteriaBuilder().createQuery(domainClass);
 		final Root<T> root = criteriaQuery.from(domainClass);
 		
 		if (returnRoot != null) {
-			returnRoot.setValue(root);
+			returnRoot.set(root);
 		}
 		
 		return criteriaQuery.select(root);
@@ -360,7 +360,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		final List<Object> newParameters = new ArrayList<>();
 		final List<Object> newStringParameters = new ArrayList<>();
 		final Map<Integer, String> replaceStringParameters = new HashMap<>();
-		final Setable<Integer> criteriaQueryFragmentStart = new Setable<>(0);
+		final Reference<Integer> criteriaQueryFragmentStart = new Reference<>(0);
 		
 		for (int i = 0; i < parameters.length; i++) {
 			final Object parameter = parameters[i];
@@ -404,7 +404,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 			}
 		}
 		
-		for (int i = criteriaQueryFragmentStart.getValue(); i < criteriaQuery.size(); i++) {
+		for (int i = criteriaQueryFragmentStart.get(); i < criteriaQuery.size(); i++) {
 			newCriteriaQuery.add(criteriaQuery.get(i));
 		}
 		
@@ -609,12 +609,12 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return stringBuilder.toString();
 	}
 	
-	private String getQueryFragment(final List<String> query, final Setable<Integer> start, final int index, final List<String> complement) {
-		for (int i = start.getValue(); i < query.size(); start.setValue(++i)) {
+	private String getQueryFragment(final List<String> query, final Reference<Integer> start, final int index, final List<String> complement) {
+		for (int i = start.get(); i < query.size(); start.set(++i)) {
 			final String queryFragment = query.get(i);
 			
 			if (queryFragment.contains("?" + index)) {
-				start.setValue(++i);
+				start.set(++i);
 				return queryFragment;
 			} else {
 				complement.add(queryFragment);

@@ -14,7 +14,15 @@ public class Proxy {
 		proxyEnhancer.setSuperclass(superclass);
 		proxyEnhancer.setCallback(newMethodInterceptor());
 		
-		return (T) proxyEnhancer.create(parameterClasses, parameters);
+		final T instance;
+		
+		if (parameterClasses == null || parameters == null || parameterClasses.length == 0 || parameters.length == 0) {
+			instance = (T) proxyEnhancer.create();
+		} else {
+			instance = (T) proxyEnhancer.create(parameterClasses, parameters);
+		}
+		
+		return instance;
 	}
 	
 	public static <T extends ProxyInterceptable> T intercept(final Class<T> superclass) {

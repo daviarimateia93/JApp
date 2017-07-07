@@ -14,7 +14,7 @@ public class JobSchedulerImpl implements Singletonable, JobScheduler {
 	protected final ScheduledExecutorService scheduledExecutorService;
 	
 	public static synchronized JobSchedulerImpl getInstance() {
-		return SingletonFactory.getInstance(JobSchedulerImpl.class);
+		return SingletonFactory.getInstance(JobSchedulerImpl.class).get();
 	}
 	
 	protected JobSchedulerImpl() {

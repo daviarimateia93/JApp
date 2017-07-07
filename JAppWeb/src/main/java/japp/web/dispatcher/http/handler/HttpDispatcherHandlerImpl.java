@@ -21,7 +21,7 @@ import javax.servlet.http.Part;
 import japp.util.ByteHelper;
 import japp.util.DateHelper;
 import japp.util.ReflectionHelper;
-import japp.util.Setable;
+import japp.util.Reference;
 import japp.util.StringHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
@@ -93,23 +93,23 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 		} else if (!Void.TYPE.equals(method.getReturnType())) {
 			final String acceptContentType = httpServletRequest.getHeader("Accept");
 			final boolean useAcceptContentType = acceptContentType != null && !acceptContentType.equals("*/*");
-			final Setable<String> contentType = new Setable<>();
+			final Reference<String> contentType = new Reference<>();
 			
 			if (httpServletResponse.getContentType() == null) {
 				if (requestMapping.getProduces().length > 0) {
-					contentType.setValue(requestMapping.getProduces()[0]);
+					contentType.set(requestMapping.getProduces()[0]);
 				} else if (useAcceptContentType) {
-					contentType.setValue(acceptContentType);
+					contentType.set(acceptContentType);
 				} else {
-					contentType.setValue(WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
+					contentType.set(WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
 				}
 			} else {
-				contentType.setValue(httpServletResponse.getContentType());
+				contentType.set(httpServletResponse.getContentType());
 			}
 			
 			final byte[] content = httpDispatcherParserManager.parseOutgoing(contentType, useAcceptContentType, methodReturnObject);
 			
-			HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, 200, contentType.getValue(), content);
+			HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, 200, contentType.get(), content);
 		}
 	}
 	
@@ -185,7 +185,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 					requestBodyObject = generateBasicValue(StringHelper.toString(requestBodyBytes), type);
 					
 					if (requestBodyObject == null) {
-						final Setable<String> contentType = new Setable<>(httpServletRequest.getContentType() != null ? httpServletRequest.getContentType() : WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
+						final Reference<String> contentType = new Reference<>(httpServletRequest.getContentType() != null ? httpServletRequest.getContentType() : WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
 						
 						requestBodyObject = httpDispatcherParserManager.parseIncoming(contentType, requestBodyBytes, type);
 					}

@@ -10,33 +10,33 @@ public abstract class ExceptionHelper {
 	}
 	
 	public static Throwable getCause(final Throwable throwable, final Class<? extends Throwable> throwableClass) {
-		final Setable<Throwable> throwableCause = new Setable<>();
+		final Reference<Throwable> throwableCause = new Reference<>();
 		
 		iterateThroughCauses(throwable, new IterableListener<Throwable>() {
 			
 			@Override
 			public void iterate(final Throwable throwable) {
 				if (throwableClass.isAssignableFrom(throwable.getClass())) {
-					throwableCause.setValue(throwable);
+					throwableCause.set(throwable);
 				}
 			}
 		});
 		
-		return throwableCause.getValue();
+		return throwableCause.get();
 	}
 	
 	public static Throwable getRootCause(final Throwable throwable) {
-		final Setable<Throwable> throwableRootCause = new Setable<>(throwable);
+		final Reference<Throwable> throwableRootCause = new Reference<>(throwable);
 		
 		iterateThroughCauses(throwable, new IterableListener<Throwable>() {
 			
 			@Override
 			public void iterate(final Throwable throwable) {
-				throwableRootCause.setValue(throwable);
+				throwableRootCause.set(throwable);
 			}
 		});
 		
-		return throwableRootCause.getValue();
+		return throwableRootCause.get();
 	}
 	
 	public static void iterateThroughCauses(final Throwable throwable, final IterableListener<Throwable> iterableListener) {

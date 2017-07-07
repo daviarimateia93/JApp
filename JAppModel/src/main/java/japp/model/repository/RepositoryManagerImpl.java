@@ -18,7 +18,7 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	private static final ThreadLocal<Map<String, EntityManager>> entityManagers = new ThreadLocal<>();
 	
 	public static synchronized RepositoryManagerImpl getInstance() {
-		return SingletonFactory.getInstance(RepositoryManagerImpl.class);
+		return SingletonFactory.getInstance(RepositoryManagerImpl.class).get();
 	}
 	
 	protected RepositoryManagerImpl() {

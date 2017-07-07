@@ -15,7 +15,7 @@ import japp.model.ModelApp;
 import japp.util.ByteHelper;
 import japp.util.ExceptionHelper;
 import japp.util.JAppRuntimeException;
-import japp.util.Setable;
+import japp.util.Reference;
 import japp.util.StringHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
@@ -68,8 +68,8 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 	@Override
 	public void dispatch(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		final boolean isOpenSessionView = WebApp.getWebAppConfiguration().isOpenSessionView();
-		final Setable<EntityManager> entityManager = new Setable<>();
-		final Setable<Exception> threadException = new Setable<>();
+		final Reference<EntityManager> entityManager = new Reference<>();
+		final Reference<Exception> threadException = new Reference<>();
 		
 		try {
 			final HttpDispatcherUriCompilation httpDispatcherUriCompilation = getHttpDispatcherUriCompilation(httpServletRequest);
@@ -85,15 +85,15 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 				final Thread thread = new Thread() {
 					public void run() {
 						try {
-							entityManager.setValue(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+							entityManager.set(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 							
-							ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.getValue(), runnable);
+							ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.get(), runnable);
 							
-							if (entityManager.getValue().isOpen()) {
-								entityManager.getValue().close();
+							if (entityManager.get().isOpen()) {
+								entityManager.get().close();
 							}
 						} catch (final Exception exception) {
-							threadException.setValue(exception);
+							threadException.set(exception);
 						}
 					}
 				};
@@ -101,8 +101,8 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 				thread.start();
 				thread.join();
 				
-				if (threadException.getValue() != null) {
-					throw threadException.getValue();
+				if (threadException.get() != null) {
+					throw threadException.get();
 				}
 			} else {
 				runnable.run();
@@ -110,8 +110,8 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 		} catch (final Exception exception) {
 			handleUncaughtException(exception, httpServletRequest, httpServletResponse);
 			
-			if (isOpenSessionView && entityManager.getValue() != null && entityManager.getValue().isOpen()) {
-				entityManager.getValue().close();
+			if (isOpenSessionView && entityManager.get() != null && entityManager.get().isOpen()) {
+				entityManager.get().close();
 			}
 		}
 	}
@@ -181,7 +181,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 						}
 					}
 					
-					addRequestMapping(new RequestMapping(httpControllerFactory.getHttpController(httpControllerClass), method, requestMethod, uriPattern, produces, consumes));
+					addRequestMapping(new RequestMapping(httpControllerFactory.getHttpController(httpControllerClass).get(), method, requestMethod, uriPattern, produces, consumes));
 				}
 			}
 		}
