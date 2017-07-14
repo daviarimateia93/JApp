@@ -31,7 +31,7 @@ public abstract class WsController extends Endpoint implements Controller {
 	public abstract String getEndpointPath();
 	
 	@Override
-	public void onOpen(final Session session, final EndpointConfig config) {
+	public void onOpen(final Session session, final EndpointConfig endpointConfig) {
 		sessions.add(session);
 	}
 	

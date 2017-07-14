@@ -1,5 +1,7 @@
 package japp.web.controller.ws;
 
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
 import japp.util.Reference;
@@ -31,6 +33,14 @@ public class WsControllerFactoryImpl implements Singletonable, WsControllerFacto
 			@Override
 			public <U> U getEndpointInstance(final Class<U> endpointClass) throws InstantiationException {
 				return (U) instance;
+			}
+			
+			@Override
+			public void modifyHandshake(final ServerEndpointConfig serverEndpointConfig, final HandshakeRequest handshakeRequest, final HandshakeResponse handshakeResponse) {
+				super.modifyHandshake(serverEndpointConfig, handshakeRequest, handshakeResponse);
+				
+				serverEndpointConfig.getUserProperties().put(handshakeRequest.getClass().getName(), handshakeRequest);
+				serverEndpointConfig.getUserProperties().put(handshakeResponse.getClass().getName(), handshakeResponse);
 			}
 		}).build();
 	}
