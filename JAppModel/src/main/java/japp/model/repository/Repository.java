@@ -131,7 +131,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		if (resultList == null || resultList.isEmpty()) {
 			return null;
 		} else {
-			return (T) resultList.get(0);
+			return resultList.get(0);
 		}
 	}
 	
@@ -191,9 +191,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 			
 			foundEntity.merge(entity);
 			
-			final T mergedEntity = merge(foundEntity);
-			
-			return mergedEntity;
+			return merge(foundEntity);
 		}
 	}
 	
@@ -428,7 +426,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 					final String alias = aliases.get(i).split("_")[0];
 					
 					if (alias.contains(".")) {
-						populate(map, alias.substring(alias.indexOf(".") + 1), result[i]);
+						populate(map, alias.substring(alias.indexOf('.') + 1), result[i]);
 					} else {
 						throw new JAppRuntimeException("INVALID_PATH");
 					}
@@ -439,25 +437,6 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		}
 		
 		return mappedResultList;
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected Object search(final Map<String, Object> map, final String alias) {
-		Map<String, Object> auxMap = new HashMap<>();
-		
-		for (String fragment : alias.split("\\.")) {
-			if (auxMap.containsKey(fragment)) {
-				if (auxMap.get(fragment) instanceof Map) {
-					auxMap = (Map) auxMap.get(fragment);
-				} else {
-					return auxMap.get(fragment);
-				}
-			} else {
-				break;
-			}
-		}
-		
-		return null;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
