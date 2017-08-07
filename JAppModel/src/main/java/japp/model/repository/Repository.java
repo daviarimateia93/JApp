@@ -353,47 +353,6 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return deepSearch(selections, fromQueryString, parseQuery(criteriaQuery), sortQueryString, firstResult, maxResults, parameters);
 	}
 	
-	private String[] deepSearchSplit(final String parameter) {
-		final List<String> splitted = new ArrayList<>();
-		final String newParameter = parameter.trim().replaceAll(" +", " ");
-		final StringBuilder stringBuilder = new StringBuilder();
-		boolean foundQuotes = false;
-		
-		for (int i = 0; i < newParameter.length(); i++) {
-			char character = newParameter.charAt(i);
-			
-			if (character == '"' && !foundQuotes) {
-				foundQuotes = true;
-				continue;
-			}
-			
-			if (character == '"' && foundQuotes) {
-				splitted.add(stringBuilder.toString());
-				stringBuilder.setLength(0);
-				foundQuotes = false;
-				continue;
-			}
-			
-			if (foundQuotes) {
-				stringBuilder.append(character);
-			}
-			
-			if (character != ' ' && !foundQuotes) {
-				stringBuilder.append(character);
-			}
-			
-			if (character == ' ' && !foundQuotes) {
-				if (!stringBuilder.toString().isEmpty()) {
-					splitted.add(stringBuilder.toString());
-				}
-				
-				stringBuilder.setLength(0);
-			}
-		}
-		
-		return splitted.toArray(new String[splitted.size()]);
-	}
-	
 	public PageResult<Map<String, Object>> deepSearch(final List<String> selections, final String fromQueryString, final List<String> criteriaQuery, final String sortQueryString, final int firstResult, final int maxResults, final Object... parameters) {
 		final List<String> newCriteriaQuery = new ArrayList<>();
 		final List<Object> newParameters = new ArrayList<>();
@@ -407,7 +366,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 			newParameters.add(parameter);
 			
 			if (parameter != null && parameter instanceof String) {
-				final String[] parameterFragments = deepSearchSplit((String) parameter);
+				final String[] parameterFragments = deepSplitQuery((String) parameter);
 				final List<String> duplicatedCriteriaQueryFragment = new ArrayList<>();
 				final List<String> criteriaQueryFragmentComplement = new ArrayList<>();
 				final String criteriaQueryFragment = getQueryFragment(criteriaQuery, criteriaQueryFragmentStart, i, criteriaQueryFragmentComplement);
@@ -426,7 +385,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 				
 				Collections.addAll(newCriteriaQuery, duplicatedCriteriaQueryFragment.toArray(new String[duplicatedCriteriaQueryFragment.size()]));
 				
-				if (parameterFragments.length > 1) {
+				if (parameterFragments.length > 0) {
 					replaceStringParameters.put(i, fixParameterFragment(parameterFragments, parameterFragments[0]));
 					
 					for (int j = 1; j < parameterFragments.length; j++) {
@@ -606,8 +565,71 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return queryDateFragments.toArray(new String[queryDateFragments.size()]);
 	}
 	
+	protected char getDeepSplitQueryEscape() {
+		return '"';
+	}
+	
 	private String[] splitQuery(final String query) {
 		return query.trim().split(" +");
+	}
+	
+	private String[] deepSplitQuery(final String query) {
+		final List<String> splitted = new ArrayList<>();
+		final String newQuery = query.trim().replaceAll(" +", " ");
+		final StringBuilder stringBuilder = new StringBuilder();
+		final char escape = getDeepSplitQueryEscape();
+		boolean foundEscape = false;
+		
+		for (int i = 0; i < newQuery.length(); i++) {
+			final char character = newQuery.charAt(i);
+			
+			if (character == escape && !foundEscape) {
+				addAndEmptyStringBuilder(splitted, stringBuilder);
+				
+				foundEscape = true;
+				continue;
+			}
+			
+			if (character == escape && foundEscape) {
+				addAndEmptyStringBuilder(splitted, stringBuilder);
+				
+				foundEscape = false;
+				continue;
+			}
+			
+			if (foundEscape) {
+				stringBuilder.append(character);
+			}
+			
+			if (character != ' ' && !foundEscape) {
+				stringBuilder.append(character);
+			}
+			
+			if (character == ' ' && !foundEscape) {
+				addAndEmptyStringBuilder(splitted, stringBuilder);
+			}
+		}
+		
+		addAndEmptyStringBuilder(splitted, stringBuilder);
+		
+		if (splitted.size() > 1 && splitted.get(0).equals("%")) {
+			splitted.remove(0);
+			splitted.set(0, "%" + splitted.get(0));
+		}
+		
+		if (splitted.size() > 1 && splitted.get(splitted.size() - 1).equals("%")) {
+			splitted.remove(splitted.size() - 1);
+			splitted.set(splitted.size() - 1, splitted.get(splitted.size() - 1) + "%");
+		}
+		
+		return splitted.toArray(new String[splitted.size()]);
+	}
+	
+	private void addAndEmptyStringBuilder(final List<String> strings, final StringBuilder stringBuilder) {
+		if (!stringBuilder.toString().isEmpty()) {
+			strings.add(stringBuilder.toString());
+			stringBuilder.setLength(0);
+		}
 	}
 	
 	private String fixParameterFragment(final String[] parameterFragments, final String parameterFragment) {
