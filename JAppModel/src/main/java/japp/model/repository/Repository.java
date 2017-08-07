@@ -353,6 +353,47 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return deepSearch(selections, fromQueryString, parseQuery(criteriaQuery), sortQueryString, firstResult, maxResults, parameters);
 	}
 	
+	private String[] deepSearchSplit(final String parameter) {
+		final List<String> splitted = new ArrayList<>();
+		final String newParameter = parameter.trim().replaceAll(" +", " ");
+		final StringBuilder stringBuilder = new StringBuilder();
+		boolean foundQuotes = false;
+		
+		for (int i = 0; i < newParameter.length(); i++) {
+			char character = newParameter.charAt(i);
+			
+			if (character == '"' && !foundQuotes) {
+				foundQuotes = true;
+				continue;
+			}
+			
+			if (character == '"' && foundQuotes) {
+				splitted.add(stringBuilder.toString());
+				stringBuilder.setLength(0);
+				foundQuotes = false;
+				continue;
+			}
+			
+			if (foundQuotes) {
+				stringBuilder.append(character);
+			}
+			
+			if (character != ' ' && !foundQuotes) {
+				stringBuilder.append(character);
+			}
+			
+			if (character == ' ' && !foundQuotes) {
+				if (!stringBuilder.toString().isEmpty()) {
+					splitted.add(stringBuilder.toString());
+				}
+				
+				stringBuilder.setLength(0);
+			}
+		}
+		
+		return splitted.toArray(new String[splitted.size()]);
+	}
+	
 	public PageResult<Map<String, Object>> deepSearch(final List<String> selections, final String fromQueryString, final List<String> criteriaQuery, final String sortQueryString, final int firstResult, final int maxResults, final Object... parameters) {
 		final List<String> newCriteriaQuery = new ArrayList<>();
 		final List<Object> newParameters = new ArrayList<>();
@@ -366,8 +407,7 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 			newParameters.add(parameter);
 			
 			if (parameter != null && parameter instanceof String) {
-				final String parameterAsString = (String) parameter;
-				final String[] parameterFragments = parameterAsString.split(" +");
+				final String[] parameterFragments = deepSearchSplit((String) parameter);
 				final List<String> duplicatedCriteriaQueryFragment = new ArrayList<>();
 				final List<String> criteriaQueryFragmentComplement = new ArrayList<>();
 				final String criteriaQueryFragment = getQueryFragment(criteriaQuery, criteriaQueryFragmentStart, i, criteriaQueryFragmentComplement);
