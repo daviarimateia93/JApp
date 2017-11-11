@@ -197,16 +197,10 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	
 	public void persist(final T entity) {
 		entityManager.persist(entity);
-		
-		flush();
 	}
 	
 	public T merge(final T entity) {
-		final T mergedEntity = entityManager.merge(entity);
-		
-		flush();
-		
-		return mergedEntity;
+		return entityManager.merge(entity);
 	}
 	
 	public void flush() {
@@ -224,7 +218,6 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		
 		if (foundEntity != null) {
 			entityManager.remove(foundEntity);
-			entityManager.flush();
 		}
 	}
 	
