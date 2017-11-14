@@ -17,6 +17,7 @@ import japp.util.ExceptionHelper;
 import japp.util.JAppRuntimeException;
 import japp.util.Reference;
 import japp.util.StringHelper;
+import japp.util.ThreadHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
 import japp.web.controller.http.HttpControllerFactory;
@@ -82,7 +83,9 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 			};
 			
 			if (isOpenSessionView) {
-				final Thread thread = new Thread() {
+				ThreadHelper.executeInNewThreadAndJoin(new Runnable() {
+					
+					@Override
 					public void run() {
 						try {
 							entityManager.set(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
@@ -96,10 +99,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 							threadException.set(exception);
 						}
 					}
-				};
-				
-				thread.start();
-				thread.join();
+				});
 				
 				if (threadException.get() != null) {
 					throw threadException.get();

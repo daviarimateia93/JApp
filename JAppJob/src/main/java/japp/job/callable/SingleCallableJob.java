@@ -1,6 +1,6 @@
 package japp.job.callable;
 
-public abstract class SingleCallableJob<T> implements CallableJob<T> {
+public abstract class SingleCallableJob<T> extends CallableJob<T> {
 	
 	private boolean called = false;
 	
@@ -8,14 +8,14 @@ public abstract class SingleCallableJob<T> implements CallableJob<T> {
 		
 	}
 	
-	protected abstract T callOnce();
+	protected abstract T executeOnce();
 	
 	@Override
-	public final T call() throws Exception {
+	public final T execute() {
 		if (!called) {
 			called = true;
 			
-			return callOnce();
+			return executeOnce();
 		}
 		
 		return null;

@@ -1,6 +1,6 @@
 package japp.job.runnable;
 
-public abstract class SingleRunnableJob implements RunnableJob {
+public abstract class SingleRunnableJob extends RunnableJob {
 	
 	private boolean ran = false;
 	
@@ -8,14 +8,14 @@ public abstract class SingleRunnableJob implements RunnableJob {
 		
 	}
 	
-	protected abstract void runOnce();
+	protected abstract void executeOnce();
 	
 	@Override
-	public final void run() {
+	public final void execute() {
 		if (!ran) {
 			ran = true;
 			
-			runOnce();
+			executeOnce();
 		}
 	}
 }

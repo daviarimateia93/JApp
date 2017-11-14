@@ -2,6 +2,34 @@ package japp.job.callable;
 
 import java.util.concurrent.Callable;
 
-public interface CallableJob<T> extends Callable<T> {
+import japp.job.Job;
+import japp.util.Reference;
+import japp.util.ThreadHelper;
+
+public abstract class CallableJob<T> extends Job implements Callable<T> {
 	
+	protected CallableJob() {
+		
+	}
+	
+	public abstract T execute();
+	
+	@Override
+	public T call() throws Exception {
+		final Reference<T> value = new Reference<>();
+		
+		if (executeInNewThread()) {
+			ThreadHelper.executeInNewThreadAndJoin(new Runnable() {
+				
+				@Override
+				public void run() {
+					value.set(execute());
+				}
+			});
+		} else {
+			value.set(execute());
+		}
+		
+		return value.get();
+	}
 }
