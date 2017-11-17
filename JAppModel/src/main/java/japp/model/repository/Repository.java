@@ -203,10 +203,6 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return entityManager.merge(entity);
 	}
 	
-	public void flush() {
-		entityManager.flush();
-	}
-	
 	public void delete(final T entity) {
 		final U id = getId(entity);
 		

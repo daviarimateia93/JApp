@@ -86,6 +86,8 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public <T> T executeInCurrentOrNewTransaction(final EntityManager entityManager, final Callable<T> callable) {
 		if (entityManager.getTransaction().isActive()) {
+			//entityManager.clear();
+			
 			return executeInCurrentTransaction(callable);
 		} else {
 			return executeInNewTransaction(entityManager, callable);
@@ -95,6 +97,8 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public void executeInCurrentOrNewTransaction(final EntityManager entityManager, final Runnable runnable) {
 		if (entityManager.getTransaction().isActive()) {
+			//entityManager.clear();
+			
 			executeInCurrentTransaction(runnable);
 		} else {
 			executeInNewTransaction(entityManager, runnable);
@@ -104,9 +108,13 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public <T> T executeInNewTransaction(final EntityManager entityManager, final Callable<T> callable) {
 		try {
+			entityManager.clear();
+			
 			entityManager.getTransaction().begin();
 			
 			final T value = callable.call();
+			
+			entityManager.flush();
 			
 			entityManager.getTransaction().commit();
 			
@@ -121,9 +129,13 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public void executeInNewTransaction(final EntityManager entityManager, final Runnable runnable) {
 		try {
+			entityManager.clear();
+			
 			entityManager.getTransaction().begin();
 			
 			runnable.run();
+			
+			entityManager.flush();
 			
 			entityManager.getTransaction().commit();
 		} catch (final Exception exception) {
