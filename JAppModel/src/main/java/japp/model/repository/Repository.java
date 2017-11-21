@@ -456,23 +456,23 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	}
 	
 	protected Date parseStartDate(final String query) {
-		return getSmallestDate(parseDates(query, " 00:00:00", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getSmallestDate(parseDates(query, " 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
 	}
 	
 	protected Date parseEndDate(final String query) {
-		return getBiggestDate(parseDates(query, " 23:59:59", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getBiggestDate(parseDates(query, " 23:59:59", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
 	}
 	
 	protected Date parseStartDateTime(final String query) {
-		return getSmallestDate(parseDates(query, ":00", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getSmallestDate(parseDates(query, ":00", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
 	}
 	
 	protected Date parseEndDateTime(final String query) {
-		return getBiggestDate(parseDates(query, ":59", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getBiggestDate(parseDates(query, ":59", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
 	}
 	
 	protected Date parseDateTime(final String query) {
-		return DateHelper.parseDate(query, "yyyy-MM-dd'T'HH:mm:ss");
+		return DateHelper.parseDate(query, "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss");
 	}
 	
 	protected Date parseDate(final String query) {
@@ -503,12 +503,12 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return biggestDate;
 	}
 	
-	private Date[] parseDates(final String query, final String complement, final String pattern) {
+	private Date[] parseDates(final String query, final String complement, final String... patterns) {
 		final Set<Date> dates = new HashSet<>();
 		final String[] queryDateFragments = getQueryDateFragments(query);
 		
 		for (final String queryDateFragment : queryDateFragments) {
-			final Date date = parseDate(queryDateFragment, complement, pattern);
+			final Date date = parseDate(queryDateFragment, complement, patterns);
 			
 			if (date != null) {
 				dates.add(date);
@@ -518,8 +518,8 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return dates.toArray(new Date[dates.size()]);
 	}
 	
-	private Date parseDate(final String queryDateFragment, final String complement, final String pattern) {
-		return DateHelper.parseDate(queryDateFragment + complement, pattern);
+	private Date parseDate(final String queryDateFragment, final String complement, final String... patterns) {
+		return DateHelper.parseDate(queryDateFragment + complement, patterns);
 	}
 	
 	protected String getQueryGlue(final String query) {

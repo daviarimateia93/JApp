@@ -53,9 +53,17 @@ public abstract class DateHelper {
 		return parseDate(date, DATE_TIME_FORMAT_PATTERN);
 	}
 	
-	public static Date parseDate(final String date, final String pattern) {
+	public static Date parseDate(final String date, final String... patterns) {
 		try {
-			return new SimpleDateFormat(pattern).parse(date);
+			for (final String pattern : patterns) {
+				final Date parsedDate = new SimpleDateFormat(pattern).parse(date);
+				
+				if (parsedDate != null) {
+					return parsedDate;
+				}
+			}
+			
+			return null;
 		} catch (final ParseException parseException) {
 			return null;
 		}
