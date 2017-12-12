@@ -456,11 +456,11 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	}
 	
 	protected Date parseStartDate(final String query) {
-		return getSmallestDate(parseDates(query, " 00:00:00", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
+		return getSmallestDate(parseDates(query, "T00:00:00", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseEndDate(final String query) {
-		return getBiggestDate(parseDates(query, " 23:59:59", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
+		return getBiggestDate(parseDates(query, "T23:59:59", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseStartDateTime(final String query) {
