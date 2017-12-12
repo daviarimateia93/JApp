@@ -456,23 +456,23 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	}
 	
 	protected Date parseStartDate(final String query) {
-		return getSmallestDate(parseDates(query, " 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getSmallestDate(parseDates(query, " 00:00:00", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseEndDate(final String query) {
-		return getBiggestDate(parseDates(query, " 23:59:59", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getBiggestDate(parseDates(query, " 23:59:59", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseStartDateTime(final String query) {
-		return getSmallestDate(parseDates(query, ":00", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getSmallestDate(parseDates(query, ":00", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseEndDateTime(final String query) {
-		return getBiggestDate(parseDates(query, ":59", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss"));
+		return getBiggestDate(parseDates(query, ":59", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"));
 	}
 	
 	protected Date parseDateTime(final String query) {
-		return DateHelper.parseDate(query, "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss");
+		return DateHelper.parseDate(query, "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd");
 	}
 	
 	protected Date parseDate(final String query) {
