@@ -54,19 +54,19 @@ public abstract class DateHelper {
 	}
 	
 	public static Date parseDate(final String date, final String... patterns) {
-		try {
-			for (final String pattern : patterns) {
+		for (final String pattern : patterns) {
+			try {
 				final Date parsedDate = new SimpleDateFormat(pattern).parse(date);
 				
 				if (parsedDate != null) {
 					return parsedDate;
 				}
+			} catch (final ParseException parseException) {
+				
 			}
-			
-			return null;
-		} catch (final ParseException parseException) {
-			return null;
 		}
+		
+		return null;
 	}
 	
 	public static String formatDate(final Date date) {

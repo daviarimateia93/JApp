@@ -6,8 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +18,8 @@ import javax.servlet.http.Part;
 
 import japp.util.ByteHelper;
 import japp.util.DateHelper;
-import japp.util.ReflectionHelper;
 import japp.util.Reference;
+import japp.util.ReflectionHelper;
 import japp.util.StringHelper;
 import japp.web.WebApp;
 import japp.web.controller.http.HttpController;
@@ -39,6 +37,7 @@ import japp.web.view.View;
 public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
 	public static String DATE_TIME_FORMAT_PATTERN = DateHelper.DATE_TIME_FORMAT_PATTERN;
+	public static String DATE_FORMAT_PATTERN = DateHelper.DATE_FORMAT_PATTERN;
 	
 	private final HttpDispatcherParserManager httpDispatcherParserManager;
 	
@@ -216,11 +215,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
 	protected Object generateBasicValue(final String value, final Class<?> type) {
 		if (type.isAssignableFrom(Date.class)) {
-			try {
-				return new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN).parse(value);
-			} catch (final ParseException exception) {
-				return null;
-			}
+			return DateHelper.parseDate(value, DATE_TIME_FORMAT_PATTERN, DATE_FORMAT_PATTERN);
 		} else {
 			return ReflectionHelper.generateBasicValue(value, type);
 		}
