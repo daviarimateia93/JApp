@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import japp.stp.command.Command;
+import stp.core.STPObject;
 import stp.message.Message;
 import stp.message.Payload;
-import stp.system.STPObject;
 
 public class CommanProtocol extends STPObject {
 	

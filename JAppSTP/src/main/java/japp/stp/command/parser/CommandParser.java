@@ -7,10 +7,10 @@ import japp.stp.command.Command;
 import japp.stp.command.exception.CommandProtocolException;
 import japp.stp.command.protocol.CommanProtocol;
 import japp.stp.command.runnable.CommandRunnable;
+import stp.core.STPException;
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.parser.Parser;
-import stp.system.STPException;
 
 public abstract class CommandParser extends Parser {
 	
