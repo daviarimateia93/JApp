@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import japp.model.ModelApp;
+import japp.model.service.authorization.ForbiddenException;
+import japp.model.service.authorization.UnauthorizedException;
 import japp.util.ByteHelper;
 import japp.util.ExceptionHelper;
 import japp.util.JAppRuntimeException;
@@ -118,10 +120,10 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 	
 	@Override
 	public void handleUncaughtException(final Exception uncaughtException, final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
-		final int httpStatusCode = uncaughtException instanceof HttpException ? ((HttpException) uncaughtException).getHttpStatusCode() : 500;
-		final String uncaughtExceptionMessage = uncaughtException instanceof HttpException ? uncaughtException.getCause() != null ? uncaughtException.getCause().getMessage() : uncaughtException.getMessage() : uncaughtException.getMessage();
+		final int httpStatusCode = getHttpStatusCode(uncaughtException);
+		final String httpMessage = getHttpMessage(uncaughtException);
 		final StringBuilder contentStringBuilder = new StringBuilder();
-		contentStringBuilder.append(StringHelper.isNullOrEmpty(uncaughtExceptionMessage) ? "" : uncaughtExceptionMessage);
+		contentStringBuilder.append(StringHelper.isNullOrEmpty(httpMessage) ? "" : httpMessage);
 		
 		if (httpStatusCode == 500) {
 			uncaughtException.printStackTrace();
@@ -130,6 +132,29 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 		}
 		
 		HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, httpStatusCode, "text/plain", ByteHelper.toBytes(contentStringBuilder.toString()));
+	}
+	
+	private int getHttpStatusCode(final Exception exception) {
+		final Throwable rootCause = ExceptionHelper.getRootCause(exception);
+		final int statusCode;
+		
+		if (rootCause instanceof ForbiddenException) {
+			statusCode = 403;
+		} else if (rootCause instanceof UnauthorizedException) {
+			statusCode = 401;
+		} else if (exception instanceof HttpException) {
+			statusCode = ((HttpException) exception).getHttpStatusCode();
+		} else {
+			statusCode = 500;
+		}
+		
+		return statusCode;
+	}
+	
+	private String getHttpMessage(final Exception exception) {
+		final Throwable rootCause = ExceptionHelper.getRootCause(exception);
+		
+		return rootCause.getMessage();
 	}
 	
 	@Override

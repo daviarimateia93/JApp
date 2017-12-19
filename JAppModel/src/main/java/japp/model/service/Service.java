@@ -15,6 +15,7 @@ import japp.model.service.authorization.Authorization;
 import japp.model.service.authorization.Authorizer;
 import japp.model.service.authorization.ForbiddenException;
 import japp.model.service.authorization.Rule;
+import japp.model.service.authorization.UnauthorizedException;
 import japp.model.service.transaction.Transactionable;
 import japp.util.ProxyInterceptable;
 import japp.util.ProxyMethodWrapper;
@@ -130,10 +131,8 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
 		for (int i = 0; i < proxyMethodWrapper.getMethod().getParameters().length; i++) {
 			final Parameter parameter = proxyMethodWrapper.getMethod().getParameters()[i];
 			
-			if (parameter.isAnnotationPresent(Authorizer.class)) {
-				if (proxyMethodWrapper.getParameters() != null && proxyMethodWrapper.getParameters().length >= i) {
-					authorization = new Authorization(parameter.getType(), proxyMethodWrapper.getParameters()[i], proxyMethodWrapper);
-				}
+			if (parameter.isAnnotationPresent(Authorizer.class) && proxyMethodWrapper.getParameters() != null && proxyMethodWrapper.getParameters().length >= i) {
+				authorization = new Authorization(parameter.getType(), proxyMethodWrapper.getParameters()[i], proxyMethodWrapper);
 			}
 		}
 		
@@ -147,7 +146,9 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
 				stringBuilder.append(StringHelper.join(rule.value(), " ,", ". "));
 			}
 			
-			throw new ForbiddenException(String.format("Access denied for method \"%s\" and rules \"%s\"", proxyMethodWrapper.getMethod().getName(), stringBuilder.toString()));
+			final String message = String.format("Access denied for method \"%s - %s\" and rules \"%s\"", proxyMethodWrapper.getMethod().getDeclaringClass().getName(), proxyMethodWrapper.getMethod().getName(), stringBuilder.toString());
+			
+			throw authorization == null ? new UnauthorizedException(message) : new ForbiddenException(message);
 		}
 	}
 	

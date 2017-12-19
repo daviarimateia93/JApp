@@ -214,7 +214,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	}
 	
 	protected Object generateBasicValue(final String value, final Class<?> type) {
-		if (type.isAssignableFrom(Date.class)) {
+		if (type.isAssignableFrom(Date.class) && value != null) {
 			return DateHelper.parseDate(value, DATE_TIME_FORMAT_PATTERN, DATE_FORMAT_PATTERN);
 		} else {
 			return ReflectionHelper.generateBasicValue(value, type);

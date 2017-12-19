@@ -123,11 +123,11 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected T getSingleResult(final Query query) {
-		return (T) getSingleResult(query.getResultList());
+	protected <V> V getSingleResult(final Query query) {
+		return (V) getSingleResult(query.getResultList());
 	}
 	
-	protected T getSingleResult(final List<T> resultList) {
+	protected <V> V getSingleResult(final List<V> resultList) {
 		if (resultList == null || resultList.isEmpty()) {
 			return null;
 		} else {
@@ -263,8 +263,16 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
 		return getSingleResult(getResultList(queryString, parameters));
 	}
 	
+	public <V> V getSingleResult(final Class<V> domainClass, final String queryString, final Object... parameters) {
+		return getSingleResult(getResultList(domainClass, queryString, parameters));
+	}
+	
 	public List<T> getResultList(final String queryString, final Object... parameters) {
 		return createTypedQuery(queryString, parameters).getResultList();
+	}
+	
+	public <V> List<V> getResultList(final Class<V> domainClass, final String queryString, final Object... parameters) {
+		return createTypedQuery(domainClass, queryString, parameters).getResultList();
 	}
 	
 	public T getNativeSingleResult(final String queryString, final Object... parameters) {
