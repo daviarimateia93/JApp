@@ -142,8 +142,8 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 			statusCode = 403;
 		} else if (rootCause instanceof UnauthorizedException) {
 			statusCode = 401;
-		} else if (exception instanceof HttpException) {
-			statusCode = ((HttpException) exception).getHttpStatusCode();
+		} else if (rootCause instanceof HttpException) {
+			statusCode = ((HttpException) rootCause).getHttpStatusCode();
 		} else {
 			statusCode = 500;
 		}
