@@ -14,13 +14,7 @@ public abstract class RunnableJob extends Job implements Runnable {
 	@Override
 	public void run() {
 		if (executeInNewThread()) {
-			ThreadHelper.executeInNewThreadAndJoin(new Runnable() {
-				
-				@Override
-				public void run() {
-					execute();
-				}
-			});
+			ThreadHelper.executeInNewThreadAndJoin(this::execute);
 		} else {
 			execute();
 		}

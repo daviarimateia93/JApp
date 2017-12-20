@@ -19,13 +19,7 @@ public abstract class CallableJob<T> extends Job implements Callable<T> {
 		final Reference<T> value = new Reference<>();
 		
 		if (executeInNewThread()) {
-			ThreadHelper.executeInNewThreadAndJoin(new Runnable() {
-				
-				@Override
-				public void run() {
-					value.set(execute());
-				}
-			});
+			ThreadHelper.executeInNewThreadAndJoin(()-> value.set(execute()));
 		} else {
 			value.set(execute());
 		}
