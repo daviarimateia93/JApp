@@ -5,7 +5,11 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 public abstract class HttpDispatcherHelper {
+	
+	private static final Logger logger = Logger.getLogger(HttpDispatcherHelper.class);
 	
 	protected HttpDispatcherHelper() {
 		
@@ -52,7 +56,7 @@ public abstract class HttpDispatcherHelper {
 			httpServletResponse.setContentLength(content.length);
 			httpServletResponse.getOutputStream().write(content);
 		} catch (final IOException exception) {
-			exception.printStackTrace();
+			logger.error(exception);
 		}
 	}
 }

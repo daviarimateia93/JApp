@@ -98,13 +98,11 @@ public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispa
 		final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentTypes) != null ? getHttpDispatcherParser(contentTypes) : defaultOutgoingHttpDispatcherParser;
 		
 		if (httpDispatcherParser == null) {
-			throw new HttpException(404, String.format("No defaultOutgoingDispatcherParser setted"));
+			throw new HttpException(404, "No defaultOutgoingDispatcherParser setted");
 		}
 		
-		if (acceptContentType) {
-			if (!HttpDispatcherHelper.containsContentType(httpDispatcherParser.getContentTypes(), contentTypes)) {
-				throw new HttpException(404, String.format("No parser for: %s", contentType.get()));
-			}
+		if (acceptContentType && !HttpDispatcherHelper.containsContentType(httpDispatcherParser.getContentTypes(), contentTypes)) {
+			throw new HttpException(404, String.format("No parser for: %s", contentType.get()));
 		}
 		
 		return httpDispatcherParser.parseOutgoing(object);

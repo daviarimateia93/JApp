@@ -11,6 +11,8 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import japp.model.ModelApp;
 import japp.model.service.authorization.ForbiddenException;
 import japp.model.service.authorization.UnauthorizedException;
@@ -35,6 +37,8 @@ import japp.web.uri.UriCompiler;
 import japp.web.uri.UriCompilerImpl;
 
 public class HttpDispatcherImpl implements HttpDispatcher {
+	
+	private static final Logger logger = Logger.getLogger(HttpDispatcherImpl.class);
 	
 	private final Map<String, RequestMapping> requestMappings;
 	private final UriCompiler uriCompiler;
@@ -70,51 +74,45 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 	
 	@Override
 	public void dispatch(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
-		final boolean isOpenSessionView = WebApp.getWebAppConfiguration().isOpenSessionView();
-		final Reference<EntityManager> entityManager = new Reference<>();
-		final Reference<Exception> threadException = new Reference<>();
-		
 		try {
+			final boolean isOpenSessionView = WebApp.getWebAppConfiguration().isOpenSessionView();
 			final HttpDispatcherUriCompilation httpDispatcherUriCompilation = getHttpDispatcherUriCompilation(httpServletRequest);
-			final Runnable runnable = new Runnable() {
-				
-				@Override
-				public void run() {
-					httpDispatcherHandler.handle(httpDispatcherUriCompilation, httpServletRequest, httpServletResponse);
-				}
-			};
+			final Runnable runnable = () -> httpDispatcherHandler.handle(httpDispatcherUriCompilation, httpServletRequest, httpServletResponse);
 			
 			if (isOpenSessionView) {
-				ThreadHelper.executeInNewThreadAndJoin(new Runnable() {
-					
-					@Override
-					public void run() {
-						try {
-							entityManager.set(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
-							
-							ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.get(), runnable);
-							
-							if (entityManager.get().isOpen()) {
-								entityManager.get().close();
-							}
-						} catch (final Exception exception) {
-							threadException.set(exception);
-						}
-					}
-				});
-				
-				if (threadException.get() != null) {
-					throw threadException.get();
-				}
+				dispatchInOpenSessionView(httpServletRequest, runnable);
 			} else {
 				runnable.run();
 			}
 		} catch (final Exception exception) {
 			handleUncaughtException(exception, httpServletRequest, httpServletResponse);
-			
-			if (isOpenSessionView && entityManager.get() != null && entityManager.get().isOpen()) {
-				entityManager.get().close();
+		}
+	}
+	
+	private void dispatchInOpenSessionView(final HttpServletRequest httpServletRequest, final Runnable runnable) throws Exception {
+		final Reference<Exception> threadException = new Reference<>();
+		final Reference<EntityManager> entityManager = new Reference<>();
+		
+		ThreadHelper.executeInNewThreadAndJoin(() -> {
+			try {
+				entityManager.set(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest), WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+				
+				ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.get(), runnable);
+				
+				if (entityManager.get().isOpen()) {
+					entityManager.get().close();
+				}
+			} catch (final Exception exception) {
+				if (entityManager.get() != null && entityManager.get().isOpen()) {
+					entityManager.get().close();
+				}
+				
+				threadException.set(exception);
 			}
+		});
+		
+		if (threadException.get() != null) {
+			throw threadException.get();
 		}
 	}
 	
@@ -126,7 +124,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 		contentStringBuilder.append(StringHelper.isNullOrEmpty(httpMessage) ? "" : httpMessage);
 		
 		if (httpStatusCode == 500) {
-			uncaughtException.printStackTrace();
+			logger.error(uncaughtException);
 			
 			contentStringBuilder.append("\r\n" + ExceptionHelper.getStackTraceAsString(uncaughtException));
 		}

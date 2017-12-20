@@ -1,6 +1,5 @@
 package japp.web.dispatcher.http;
 
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class HttpDispatcherServlet extends HttpServlet implements ServletContext
 	}
 	
 	@Override
-	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		if (ModelApp.getModelAppConfiguration().getRepositoryManager() != null) {
 			ModelApp.getModelAppConfiguration().getRepositoryManager().closeEntityManagerFactory();
 		}
@@ -38,45 +37,46 @@ public class HttpDispatcherServlet extends HttpServlet implements ServletContext
 	}
 	
 	@Override
-	public void contextInitialized(ServletContextEvent servletContextEvent) {
+	public void contextInitialized(final ServletContextEvent servletContextEvent) {
+		//Just to remember :)
 	}
 	
 	@Override
-	protected void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doPost(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doPut(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doPut(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doDelete(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doDelete(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doHead(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doHead(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doOptions(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doOptions(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
 	@Override
-	protected void doTrace(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void doTrace(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		handle(httpServletRequest, httpServletResponse);
 	}
 	
-	protected void handle(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+	protected void handle(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
 		if (WebApp.getWebAppConfiguration().getHttpDispatcher() != null) {
 			WebApp.getWebAppConfiguration().getHttpDispatcher().dispatch(httpServletRequest, httpServletResponse);
 		}
@@ -86,7 +86,7 @@ public class HttpDispatcherServlet extends HttpServlet implements ServletContext
 		final Enumeration<String> initParameterNames = getServletConfig().getInitParameterNames();
 		
 		while (initParameterNames.hasMoreElements()) {
-			final String parameterName = (String) initParameterNames.nextElement();
+			final String parameterName = initParameterNames.nextElement();
 			
 			configurations.put(parameterName, getServletConfig().getInitParameter(parameterName));
 		}

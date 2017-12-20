@@ -12,6 +12,10 @@ public abstract class WebApp {
 	
 	private static WebAppConfiguration webAppConfiguration;
 	
+	protected WebApp() {
+		
+	}
+	
 	public static WebAppConfiguration getWebAppConfiguration() {
 		if (webAppConfiguration == null) {
 			throw new JAppRuntimeException("WebApp.webAppConfiguration is not setted yet");

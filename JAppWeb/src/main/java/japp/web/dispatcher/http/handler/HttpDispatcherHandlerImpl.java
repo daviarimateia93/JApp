@@ -36,8 +36,9 @@ import japp.web.view.View;
 
 public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
-	public static String DATE_TIME_FORMAT_PATTERN = DateHelper.DATE_TIME_FORMAT_PATTERN;
-	public static String DATE_FORMAT_PATTERN = DateHelper.DATE_FORMAT_PATTERN;
+	private static String dateTimeFormatPattern = DateHelper.getDateTimeFormatPattern();
+	private static String dateFormatPattern = DateHelper.getDateFormatPattern();
+	private static String timeFormatPattern = DateHelper.getTimeFormatPattern();
 	
 	private final HttpDispatcherParserManager httpDispatcherParserManager;
 	
@@ -47,6 +48,30 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
 	public HttpDispatcherHandlerImpl(final HttpDispatcherParserManager httpDispatcherParserManager) {
 		this.httpDispatcherParserManager = httpDispatcherParserManager;
+	}
+	
+	public static String getDateTimeFormatPattern() {
+		return dateTimeFormatPattern;
+	}
+	
+	public static void setDateTimeFormatPattern(final String dateTimeFormatPattern) {
+		HttpDispatcherHandlerImpl.dateTimeFormatPattern = dateTimeFormatPattern;
+	}
+	
+	public static String getDateFormatPattern() {
+		return dateFormatPattern;
+	}
+	
+	public static void setDateFormatPattern(final String dateFormatPattern) {
+		HttpDispatcherHandlerImpl.dateFormatPattern = dateFormatPattern;
+	}
+	
+	public static String getTimeFormatPattern() {
+		return timeFormatPattern;
+	}
+	
+	public static void setTimeFormatPattern(final String timeFormatPattern) {
+		HttpDispatcherHandlerImpl.timeFormatPattern = timeFormatPattern;
 	}
 	
 	@Override
@@ -215,7 +240,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 	
 	protected Object generateBasicValue(final String value, final Class<?> type) {
 		if (type.isAssignableFrom(Date.class) && value != null) {
-			return DateHelper.parseDate(value, DATE_TIME_FORMAT_PATTERN, DATE_FORMAT_PATTERN);
+			return DateHelper.parseDate(value, dateTimeFormatPattern, dateFormatPattern, timeFormatPattern);
 		} else {
 			return ReflectionHelper.generateBasicValue(value, type);
 		}

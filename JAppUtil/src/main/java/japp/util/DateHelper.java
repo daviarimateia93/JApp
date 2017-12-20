@@ -18,12 +18,36 @@ public abstract class DateHelper {
 	
 	private static final String EMPTY = "";
 	
-	public static String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-	public static String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
-	public static String TIME_FORMAT_PATTERN = "HH:mm:ss.SSS";
+	private static String dateTimeFormatPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	private static String dateFormatPattern = "yyyy-MM-dd";
+	private static String timeFormatPattern = "HH:mm:ss.SSS";
 	
 	protected DateHelper() {
 		
+	}
+	
+	public static String getDateTimeFormatPattern() {
+		return dateTimeFormatPattern;
+	}
+	
+	public static void setDateTimeFormatPattern(final String dateTimeFormatPattern) {
+		DateHelper.dateTimeFormatPattern = dateTimeFormatPattern;
+	}
+	
+	public static String getDateFormatPattern() {
+		return dateFormatPattern;
+	}
+	
+	public static void setDateFormatPattern(final String dateFormatPattern) {
+		DateHelper.dateFormatPattern = dateFormatPattern;
+	}
+	
+	public static String getTimeFormatPattern() {
+		return timeFormatPattern;
+	}
+	
+	public static void setTimeFormatPattern(final String timeFormatPattern) {
+		DateHelper.timeFormatPattern = timeFormatPattern;
 	}
 	
 	public static LocalDateTime setTimeZone(final LocalDateTime localDateTime, final String timeZone) {
@@ -42,7 +66,7 @@ public abstract class DateHelper {
 		if (foundTimeZone == null) {
 			return date;
 		} else {
-			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateHelper.DATE_TIME_FORMAT_PATTERN);
+			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateHelper.dateTimeFormatPattern);
 			simpleDateFormat.setTimeZone(foundTimeZone);
 			
 			return parseDate(simpleDateFormat.format(date));
@@ -50,7 +74,7 @@ public abstract class DateHelper {
 	}
 	
 	public static Date parseDate(final String date) {
-		return parseDate(date, DATE_TIME_FORMAT_PATTERN);
+		return parseDate(date, dateTimeFormatPattern);
 	}
 	
 	public static Date parseDate(final String date, final String... patterns) {
@@ -62,7 +86,7 @@ public abstract class DateHelper {
 					return parsedDate;
 				}
 			} catch (final ParseException parseException) {
-				
+				// Lets ignore it
 			}
 		}
 		
@@ -70,7 +94,7 @@ public abstract class DateHelper {
 	}
 	
 	public static String formatDate(final Date date) {
-		return formatDate(date, DATE_TIME_FORMAT_PATTERN);
+		return formatDate(date, dateTimeFormatPattern);
 	}
 	
 	public static String formatDate(final Date date, final String pattern) {
@@ -78,7 +102,7 @@ public abstract class DateHelper {
 	}
 	
 	public static LocalDateTime parseLocalDateTime(final String localDateTime) {
-		return parseLocalDateTime(localDateTime, DATE_TIME_FORMAT_PATTERN);
+		return parseLocalDateTime(localDateTime, dateTimeFormatPattern);
 	}
 	
 	public static LocalDateTime parseLocalDateTime(final String localDateTime, final String pattern) {
@@ -90,7 +114,7 @@ public abstract class DateHelper {
 	}
 	
 	public static String formatLocalDateTime(final LocalDateTime localDateTime) {
-		return formatLocalDateTime(localDateTime, DATE_TIME_FORMAT_PATTERN);
+		return formatLocalDateTime(localDateTime, dateTimeFormatPattern);
 	}
 	
 	public static String formatLocalDateTime(final LocalDateTime localDateTime, final String pattern) {
@@ -98,7 +122,7 @@ public abstract class DateHelper {
 	}
 	
 	public static LocalDate parseLocalDate(final String localDate) {
-		return parseLocalDate(localDate, DATE_FORMAT_PATTERN);
+		return parseLocalDate(localDate, dateFormatPattern);
 	}
 	
 	public static LocalDate parseLocalDate(final String localDate, final String pattern) {
@@ -110,7 +134,7 @@ public abstract class DateHelper {
 	}
 	
 	public static String formatLocalDate(final LocalDate localDate) {
-		return formatLocalDate(localDate, DATE_FORMAT_PATTERN);
+		return formatLocalDate(localDate, dateFormatPattern);
 	}
 	
 	public static String formatLocalDate(final LocalDate localDate, final String pattern) {
@@ -118,7 +142,7 @@ public abstract class DateHelper {
 	}
 	
 	public static LocalTime parseLocalTime(final String localTIme) {
-		return parseLocalTime(localTIme, TIME_FORMAT_PATTERN);
+		return parseLocalTime(localTIme, timeFormatPattern);
 	}
 	
 	public static LocalTime parseLocalTime(final String localTime, final String pattern) {
@@ -130,7 +154,7 @@ public abstract class DateHelper {
 	}
 	
 	public static String formatLocalTime(final LocalTime localTIme) {
-		return formatLocalTime(localTIme, TIME_FORMAT_PATTERN);
+		return formatLocalTime(localTIme, timeFormatPattern);
 	}
 	
 	public static String formatLocalTime(final LocalTime localTime, final String pattern) {
@@ -210,7 +234,7 @@ public abstract class DateHelper {
 	public static List<Date> getYearsBetween(final Date startDate, final Date endDate) {
 		final List<Date> years = new ArrayList<>();
 		
-		if (endDate.compareTo(startDate) == -1) {
+		if (endDate.compareTo(startDate) < 0) {
 			return years;
 		}
 		
@@ -227,7 +251,7 @@ public abstract class DateHelper {
 	public static List<Date> getMonthsBetween(final Date startDate, final Date endDate) {
 		final List<Date> months = new ArrayList<>();
 		
-		if (endDate.compareTo(startDate) == -1) {
+		if (endDate.compareTo(startDate) < 0) {
 			return months;
 		}
 		
@@ -248,7 +272,7 @@ public abstract class DateHelper {
 	public static List<Date> getWeeksBetween(final Date startDate, final Date endDate) {
 		final List<Date> weeks = new ArrayList<>();
 		
-		if (endDate.compareTo(startDate) == -1) {
+		if (endDate.compareTo(startDate) < 0) {
 			return weeks;
 		}
 		
@@ -270,7 +294,7 @@ public abstract class DateHelper {
 	public static List<Date> getDaysBetween(final Date startDate, final Date endDate) {
 		final List<Date> days = new ArrayList<>();
 		
-		if (endDate.compareTo(startDate) == -1) {
+		if (endDate.compareTo(startDate) < 0) {
 			return days;
 		}
 		
