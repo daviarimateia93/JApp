@@ -9,6 +9,10 @@ public class SingletonFactory {
 	private static final Map<Class<? extends Singletonable>, Reference<? extends Singletonable>> instances = new HashMap<>();
 	private static final ThreadLocal<Map<Class<? extends Singletonable>, Reference<? extends Singletonable>>> instancesPerThread = new ThreadLocal<>();
 	
+	protected SingletonFactory() {
+		
+	}
+	
 	public static <T extends Singletonable> Reference<T> getInstance(final Class<T> instanceClass, final Class<?>[] parameterClasses, final Object... parameters) {
 		return getInstance(instanceClass, new Callable<T>() {
 			@Override
