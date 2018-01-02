@@ -136,7 +136,9 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 		final Throwable rootCause = ExceptionHelper.getRootCause(exception);
 		final int statusCode;
 		
-		if (rootCause instanceof ForbiddenException) {
+		if (exception instanceof HttpException) {
+			statusCode = ((HttpException) exception).getHttpStatusCode();
+		} else if (rootCause instanceof ForbiddenException) {
 			statusCode = 403;
 		} else if (rootCause instanceof UnauthorizedException) {
 			statusCode = 401;
@@ -152,7 +154,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 	private String getHttpMessage(final Exception exception) {
 		final Throwable rootCause = ExceptionHelper.getRootCause(exception);
 		
-		return rootCause.getMessage();
+		return exception instanceof HttpException ? exception.getMessage() : rootCause.getMessage();
 	}
 	
 	@Override
