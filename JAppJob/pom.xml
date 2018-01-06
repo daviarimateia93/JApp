@@ -3,7 +3,7 @@
     <parent>
 	    <groupId>japp</groupId>
 	    <artifactId>JApp</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
+	    <version>0.0.1</version>
 	</parent>
     <artifactId>JAppJob</artifactId>
     <name>JAppJob</name>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppUtil</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 </project>

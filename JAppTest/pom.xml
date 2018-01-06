@@ -3,7 +3,7 @@
     <parent>
 	    <groupId>japp</groupId>
 	    <artifactId>JApp</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
+	    <version>0.0.1</version>
 	</parent>
     <artifactId>JAppTest</artifactId>
     <name>JAppTest</name>
@@ -24,17 +24,17 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppModel</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppWeb</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppJob</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.asprise.ocr</groupId>
