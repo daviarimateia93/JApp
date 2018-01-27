@@ -86,8 +86,6 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public <T> T executeInCurrentOrNewTransaction(final EntityManager entityManager, final Callable<T> callable) {
 		if (entityManager.getTransaction().isActive()) {
-			//entityManager.clear();
-			
 			return executeInCurrentTransaction(callable);
 		} else {
 			return executeInNewTransaction(entityManager, callable);
@@ -97,8 +95,6 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
 	@Override
 	public void executeInCurrentOrNewTransaction(final EntityManager entityManager, final Runnable runnable) {
 		if (entityManager.getTransaction().isActive()) {
-			//entityManager.clear();
-			
 			executeInCurrentTransaction(runnable);
 		} else {
 			executeInNewTransaction(entityManager, runnable);
