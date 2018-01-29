@@ -3,9 +3,10 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>${base.version}</version>
+        <version>LATEST</version>
     </parent>
     <artifactId>JAppSTP</artifactId>
+    <version>${base.version}</version>
     <name>JAppSTP</name>
     <build>
         <plugins>
