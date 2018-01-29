@@ -24,12 +24,12 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppModel</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppWeb</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
