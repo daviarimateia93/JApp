@@ -2,15 +2,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>japp</groupId>
     <artifactId>JApp</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>JApp</name>
     <packaging>pom</packaging>
-	<properties>
+    <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-	<build>
-		<extensions>
+    <build>
+        <extensions>
             <extension>
                 <groupId>org.kuali.maven.wagons</groupId>
                 <artifactId>maven-s3-wagon</artifactId>
@@ -28,7 +28,7 @@
             </plugin>
         </plugins>
     </build>
-	<distributionManagement>
+    <distributionManagement>
         <snapshotRepository>
             <id>repo.gerenciar.me</id>
             <url>s3://repo.gerenciar.me/snapshot</url>
@@ -44,12 +44,12 @@
             <url>s3://repo.gerenciar.me/release</url>
         </repository>
     </repositories>
-	<modules>
-		<module>JAppJob</module>
-		<module>JAppModel</module>
-		<module>JAppUtil</module>
-		<module>JAppTest</module>
-		<module>JAppWeb</module>
-		<module>JAppSTP</module>
-	</modules>
+    <modules>
+        <module>JAppJob</module>
+        <module>JAppModel</module>
+        <module>JAppUtil</module>
+        <module>JAppTest</module>
+        <module>JAppWeb</module>
+        <module>JAppSTP</module>
+    </modules>
 </project>
