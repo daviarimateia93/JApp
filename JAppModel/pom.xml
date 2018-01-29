@@ -3,7 +3,7 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>0.0.2</version>
+        <version>${base.version}</version>
     </parent>
     <artifactId>JAppModel</artifactId>
     <name>JAppModel</name>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppUtil</artifactId>
-            <version>0.0.2</version>
+            <version>${base.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

@@ -2,10 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>japp</groupId>
     <artifactId>JApp</artifactId>
-    <version>0.0.2</version>
+    <version>${base.version}</version>
     <name>JApp</name>
     <packaging>pom</packaging>
     <properties>
+        <base.version>0.0.3</base.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
