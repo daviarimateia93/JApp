@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.persistence.Id;
 
@@ -20,12 +22,20 @@ public abstract class Entity implements Serializable, Cloneable {
 		
 	}
 	
+	public List<Field> getFields() {
+		return getFields(null);
+	}
+	
 	public List<Field> getIdFields() {
+		return getFields(f -> f.isAnnotationPresent(Id.class));
+	}
+	
+	public List<Field> getFields(final Predicate<Field> predicate) {
 		final List<Field> idFields = new ArrayList<>();
 		final List<Field> fields = ReflectionHelper.getFields(this);
 		
 		for (final Field field : fields) {
-			if (field.isAnnotationPresent(Id.class)) {
+			if (predicate == null || predicate.test(field)) {
 				idFields.add(field);
 			}
 		}
@@ -43,14 +53,16 @@ public abstract class Entity implements Serializable, Cloneable {
 		}
 	}
 	
+	public List<Object> getFieldsValues() {
+		return getFieldsValues(getFields());
+	}
+	
 	public List<Object> getIdFieldsValues() {
-		final List<Object> idFieldsValues = new ArrayList<>();
-		
-		for (final Field field : getIdFields()) {
-			idFieldsValues.add(getFieldValue(field));
-		}
-		
-		return idFieldsValues;
+		return getFieldsValues(getIdFields());
+	}
+	
+	public List<Object> getFieldsValues(final List<Field> fields) {
+		return fields.stream().map(this::getFieldValue).collect(Collectors.toList());
 	}
 	
 	public <T extends Entity> void merge(final T entity) {
@@ -65,22 +77,19 @@ public abstract class Entity implements Serializable, Cloneable {
 	@Override
 	public String toString() {
 		final List<Object> idFieldsValues = getIdFieldsValues();
+		final List<Object> values = idFieldsValues.isEmpty() || idFieldsValues.stream().anyMatch(object -> object == null) ? getFieldsValues() : idFieldsValues;
 		
-		if (idFieldsValues.isEmpty() || idFieldsValues.stream().anyMatch(object -> object == null)) {
-			return JsonHelper.toString(this);
-		} else {
-			final StringBuilder stringBuilder = new StringBuilder();
-			
-			for (int i = 0; i < idFieldsValues.size(); i++) {
-				if (i > 0) {
-					stringBuilder.append(";");
-				}
-				
-				stringBuilder.append(idFieldsValues.get(i));
+		final StringBuilder stringBuilder = new StringBuilder();
+		
+		for (int i = 0; i < values.size(); i++) {
+			if (i > 0) {
+				stringBuilder.append(";");
 			}
 			
-			return stringBuilder.toString();
+			stringBuilder.append(values.get(i));
 		}
+		
+		return stringBuilder.toString();
 	}
 	
 	@Override

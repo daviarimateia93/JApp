@@ -6,7 +6,7 @@
     <name>JApp</name>
     <packaging>pom</packaging>
     <properties>
-        <base.version>0.0.4</base.version>
+        <base.version>0.0.5</base.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>

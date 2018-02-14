@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import japp.model.entity.Entity;
 import japp.util.ReflectionHelper;
@@ -21,38 +22,43 @@ public abstract class JpaHelper {
 	}
 	
 	public static <T> T initialize(final T object) {
-		return initialize(object, new LinkedHashSet<>());
-	}
-	
-	protected static <T> T initialize(final T object, final Set<Object> visitedObjects) {
-		if (object != null && !visitedObjects.contains(object)) {
-			visitedObjects.add(object);
+		final Set<Object> visitedObjects = new LinkedHashSet<>();
+		
+		final Stack<Object> stack = new Stack<>();
+		stack.push(object);
+		
+		while (!stack.isEmpty()) {
+			final Object popedObject = stack.pop();
 			
-			if (ReflectionHelper.isCollection(object)) {
-				for (final Object currentObject : (Collection<?>) object) {
-					initialize(currentObject, visitedObjects);
-				}
-			} else if (ReflectionHelper.isArray(object)) {
-				for (final Object currentObject : ReflectionHelper.getObjectArray(object)) {
-					initialize(currentObject, visitedObjects);
-				}
-			} else if (object instanceof Entity) {
-				try {
-					for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors()) {
-						final Method readMethod = propertyDescriptor.getReadMethod();
-						
-						if (readMethod != null) {
-							readMethod.setAccessible(true);
+			if (popedObject != null && !visitedObjects.contains(popedObject)) {
+				visitedObjects.add(popedObject);
+				
+				if (ReflectionHelper.isCollection(popedObject)) {
+					for (final Object currentObject : (Collection<?>) popedObject) {
+						stack.push(currentObject);
+					}
+				} else if (ReflectionHelper.isArray(popedObject)) {
+					for (final Object currentObject : ReflectionHelper.getObjectArray(popedObject)) {
+						stack.push(currentObject);
+					}
+				} else if (popedObject instanceof Entity) {
+					try {
+						for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(popedObject.getClass()).getPropertyDescriptors()) {
+							final Method readMethod = propertyDescriptor.getReadMethod();
 							
-							final Object fieldValue = readMethod.invoke(object);
-							
-							if (object instanceof Entity || ReflectionHelper.isCollection(fieldValue) || ReflectionHelper.isArray(fieldValue)) {
-								initialize(fieldValue, visitedObjects);
+							if (readMethod != null) {
+								readMethod.setAccessible(true);
+								
+								final Object fieldValue = readMethod.invoke(popedObject);
+								
+								if (popedObject instanceof Entity || ReflectionHelper.isCollection(fieldValue) || ReflectionHelper.isArray(fieldValue)) {
+									stack.push(fieldValue);
+								}
 							}
 						}
+					} catch (final IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+						
 					}
-				} catch (final IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
-					
 				}
 			}
 		}
