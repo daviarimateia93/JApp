@@ -3,10 +3,9 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>LATEST</version>
+        <version>0.0.8</version>
     </parent>
     <artifactId>JAppUtil</artifactId>
-    <version>${base.version}</version>
     <name>JAppUtil</name>
     <build>
         <plugins>

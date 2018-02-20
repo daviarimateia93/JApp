@@ -3,10 +3,9 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>LATEST</version>
+        <version>0.0.8</version>
     </parent>
     <artifactId>JAppWeb</artifactId>
-    <version>${base.version}</version>
     <name>JAppWeb</name>
     <build>
         <plugins>
@@ -28,7 +27,7 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppModel</artifactId>
-            <version>${base.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

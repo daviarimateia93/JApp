@@ -3,10 +3,9 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>LATEST</version>
+        <version>0.0.8</version>
     </parent>
     <artifactId>JAppModel</artifactId>
-    <version>${base.version}</version>
     <name>JAppModel</name>
     <build>
         <plugins>
@@ -25,7 +24,7 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppUtil</artifactId>
-            <version>${base.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

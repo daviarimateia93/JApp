@@ -3,10 +3,9 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>LATEST</version>
+        <version>0.0.8</version>
     </parent>
     <artifactId>JAppTest</artifactId>
-    <version>${base.version}</version>
     <name>JAppTest</name>
     <build>
         <plugins>
@@ -25,17 +24,17 @@
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppModel</artifactId>
-            <version>${base.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppWeb</artifactId>
-            <version>${base.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>japp</groupId>
             <artifactId>JAppJob</artifactId>
-            <version>${base.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.asprise.ocr</groupId>
