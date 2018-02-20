@@ -24,17 +24,21 @@ public abstract class Entity implements Serializable, Cloneable {
 		
 	}
 	
+	@JsonIgnore
 	public List<Field> getFields() {
 		return getFields(null);
 	}
 	
+	@JsonIgnore
 	public List<Field> getNonJsonIgnoreFields() {
 		return getFields(f -> !f.isAnnotationPresent(JsonIgnore.class));
 	}
 	
+	@JsonIgnore
 	public List<Field> getIdFields() {
 		return getFields(f -> f.isAnnotationPresent(Id.class));
 	}
+	
 	
 	public List<Field> getFields(final Predicate<Field> predicate) {
 		final List<Field> idFields = new ArrayList<>();
@@ -59,18 +63,22 @@ public abstract class Entity implements Serializable, Cloneable {
 		}
 	}
 	
+	@JsonIgnore
 	public List<Object> getFieldsValues() {
 		return getFieldsValues(getFields());
 	}
 	
+	@JsonIgnore
 	public List<Object> getNonJsonIgnoreFieldsValues() {
 		return getFieldsValues(getNonJsonIgnoreFields());
 	}
 	
+	@JsonIgnore
 	public List<Object> getIdFieldsValues() {
 		return getFieldsValues(getIdFields());
 	}
 	
+	@JsonIgnore
 	public List<Object> getFieldsValues(final List<Field> fields) {
 		return fields.stream().map(this::getFieldValue).collect(Collectors.toList());
 	}
