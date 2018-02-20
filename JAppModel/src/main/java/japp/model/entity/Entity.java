@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import japp.model.util.JpaHelper;
 import japp.util.CloneHelper;
 import japp.util.JsonHelper;
@@ -24,6 +26,10 @@ public abstract class Entity implements Serializable, Cloneable {
 	
 	public List<Field> getFields() {
 		return getFields(null);
+	}
+	
+	public List<Field> getNonJsonIgnoreFields() {
+		return getFields(f -> !f.isAnnotationPresent(JsonIgnore.class));
 	}
 	
 	public List<Field> getIdFields() {
@@ -57,6 +63,10 @@ public abstract class Entity implements Serializable, Cloneable {
 		return getFieldsValues(getFields());
 	}
 	
+	public List<Object> getNonJsonIgnoreFieldsValues() {
+		return getFieldsValues(getNonJsonIgnoreFields());
+	}
+	
 	public List<Object> getIdFieldsValues() {
 		return getFieldsValues(getIdFields());
 	}
@@ -77,7 +87,7 @@ public abstract class Entity implements Serializable, Cloneable {
 	@Override
 	public String toString() {
 		final List<Object> idFieldsValues = getIdFieldsValues();
-		final List<Object> values = idFieldsValues.isEmpty() || idFieldsValues.stream().anyMatch(object -> object == null) ? getFieldsValues() : idFieldsValues;
+		final List<Object> values = idFieldsValues.isEmpty() || idFieldsValues.stream().anyMatch(object -> object == null) ? getNonJsonIgnoreFieldsValues() : idFieldsValues;
 		
 		final StringBuilder stringBuilder = new StringBuilder();
 		
