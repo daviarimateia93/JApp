@@ -9,7 +9,7 @@ import stp.core.STPObject;
 import stp.message.Message;
 import stp.message.Payload;
 
-public class CommanProtocol extends STPObject {
+public class CommandProtocol extends STPObject {
 	
 	public static Message parse(final String type, final Command command) {
 		try {

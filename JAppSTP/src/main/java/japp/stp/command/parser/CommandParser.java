@@ -5,7 +5,7 @@ import java.util.Map;
 
 import japp.stp.command.Command;
 import japp.stp.command.exception.CommandProtocolException;
-import japp.stp.command.protocol.CommanProtocol;
+import japp.stp.command.protocol.CommandProtocol;
 import japp.stp.command.runnable.CommandRunnable;
 import stp.core.STPException;
 import stp.gateway.Peer;
@@ -26,7 +26,7 @@ public abstract class CommandParser extends Parser {
 	}
 	
 	protected void sendAsync(final Peer peer, final Command command) {
-		sendAsync(peer, CommanProtocol.parse(getType(), command));
+		sendAsync(peer, CommandProtocol.parse(getType(), command));
 	}
 	
 	protected void sendAsync(final Peer peer, final Message message) {
@@ -42,7 +42,7 @@ public abstract class CommandParser extends Parser {
 	}
 	
 	protected void sendSync(final Peer peer, final Command command) {
-		sendSync(peer, CommanProtocol.parse(getType(), command));
+		sendSync(peer, CommandProtocol.parse(getType(), command));
 	}
 	
 	protected void sendSync(final Peer peer, final Message message) {
@@ -57,7 +57,7 @@ public abstract class CommandParser extends Parser {
 	protected void read(final Peer peer, final Message message) {
 		super.read(peer, message);
 		
-		read(peer, CommanProtocol.parse(message));
+		read(peer, CommandProtocol.parse(message));
 	}
 	
 	protected void read(final Peer peer, final Command command) {
@@ -70,7 +70,7 @@ public abstract class CommandParser extends Parser {
 	protected void written(Peer peer, Message message) {
 		super.written(peer, message);
 		
-		written(peer, CommanProtocol.parse(message));
+		written(peer, CommandProtocol.parse(message));
 	}
 	
 	protected void written(final Peer peer, final Command command) {
