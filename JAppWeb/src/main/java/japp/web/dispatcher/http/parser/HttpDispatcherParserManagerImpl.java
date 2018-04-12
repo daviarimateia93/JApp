@@ -12,99 +12,104 @@ import japp.web.dispatcher.http.HttpDispatcherHelper;
 import japp.web.exception.HttpException;
 
 public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispatcherParserManager {
-	
-	protected final Map<String, HttpDispatcherParser> httpDispatcherParsers;
-	protected HttpDispatcherParser defaultOutgoingHttpDispatcherParser;
-	
-	public static synchronized HttpDispatcherParserManagerImpl getInstance() {
-		return SingletonFactory.getInstance(HttpDispatcherParserManagerImpl.class).get();
-	}
-	
-	protected HttpDispatcherParserManagerImpl() {
-		this.httpDispatcherParsers = new HashMap<>();
-	}
-	
-	@Override
-	public void setDefaultOutgoingHttpDispatcherParser(final HttpDispatcherParser httpDispatcherParser) {
-		this.defaultOutgoingHttpDispatcherParser = httpDispatcherParser;
-	}
-	
-	@Override
-	public void addHttpDispatcherParser(final HttpDispatcherParser httpDispatcherParser) {
-		removeHttpDispatcherParser(httpDispatcherParser.getContentTypes());
-		
-		for (final String contentType : httpDispatcherParser.getContentTypes()) {
-			httpDispatcherParsers.put(contentType, httpDispatcherParser);
-		}
-	}
-	
-	@Override
-	public void removeHttpDispatcherParser(final String... contentTypes) {
-		if (contentTypes != null) {
-			for (final String contentType : contentTypes) {
-				if (containsHttpDispatcherParser(contentType)) {
-					httpDispatcherParsers.remove(contentType);
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void clearHttpDispatcherParsers() {
-		httpDispatcherParsers.clear();
-	}
-	
-	@Override
-	public boolean containsHttpDispatcherParser(final String contentType) {
-		return getHttpDispatcherParser(contentType) != null;
-	}
-	
-	@Override
-	public HttpDispatcherParser getHttpDispatcherParser(final String... contentTypes) {
-		if (contentTypes != null && contentTypes.length > 0) {
-			for (String contentType : contentTypes) {
-				if (contentType != null) {
-					contentType = contentType.split(";")[0];
-					
-					final Matcher matcher = Pattern.compile("^(.*?)[; ].*$").matcher(contentType);
-					contentType = (matcher.find() ? matcher.groupCount() == 1 ? matcher.group(0) : matcher.group(1) : contentType);
-					
-					for (final Map.Entry<String, HttpDispatcherParser> entry : httpDispatcherParsers.entrySet()) {
-						if (entry.getKey().trim().equalsIgnoreCase(contentType.trim())) {
-							return entry.getValue();
-						}
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public Object parseIncoming(final Reference<String> contentType, final byte[] bytes, final Class<?> objectClass) {
-		final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentType.get());
-		
-		if (httpDispatcherParser == null) {
-			throw new HttpException(500, String.format("No parser for %s", contentType));
-		}
-		
-		return httpDispatcherParser.parseIncoming(bytes, objectClass);
-	}
-	
-	@Override
-	public byte[] parseOutgoing(final Reference<String> contentType, final boolean acceptContentType, final Object object) {
-		final String[] contentTypes = contentType.get().split("\\,");
-		final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentTypes) != null ? getHttpDispatcherParser(contentTypes) : defaultOutgoingHttpDispatcherParser;
-		
-		if (httpDispatcherParser == null) {
-			throw new HttpException(404, "No defaultOutgoingDispatcherParser setted");
-		}
-		
-		if (acceptContentType && !HttpDispatcherHelper.containsContentType(httpDispatcherParser.getContentTypes(), contentTypes)) {
-			throw new HttpException(404, String.format("No parser for: %s", contentType.get()));
-		}
-		
-		return httpDispatcherParser.parseOutgoing(object);
-	}
+
+    protected final Map<String, HttpDispatcherParser> httpDispatcherParsers;
+    protected HttpDispatcherParser defaultOutgoingHttpDispatcherParser;
+
+    public static synchronized HttpDispatcherParserManagerImpl getInstance() {
+        return SingletonFactory.getInstance(HttpDispatcherParserManagerImpl.class).get();
+    }
+
+    protected HttpDispatcherParserManagerImpl() {
+        this.httpDispatcherParsers = new HashMap<>();
+    }
+
+    @Override
+    public void setDefaultOutgoingHttpDispatcherParser(final HttpDispatcherParser httpDispatcherParser) {
+        this.defaultOutgoingHttpDispatcherParser = httpDispatcherParser;
+    }
+
+    @Override
+    public void addHttpDispatcherParser(final HttpDispatcherParser httpDispatcherParser) {
+        removeHttpDispatcherParser(httpDispatcherParser.getContentTypes());
+
+        for (final String contentType : httpDispatcherParser.getContentTypes()) {
+            httpDispatcherParsers.put(contentType, httpDispatcherParser);
+        }
+    }
+
+    @Override
+    public void removeHttpDispatcherParser(final String... contentTypes) {
+        if (contentTypes != null) {
+            for (final String contentType : contentTypes) {
+                if (containsHttpDispatcherParser(contentType)) {
+                    httpDispatcherParsers.remove(contentType);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void clearHttpDispatcherParsers() {
+        httpDispatcherParsers.clear();
+    }
+
+    @Override
+    public boolean containsHttpDispatcherParser(final String contentType) {
+        return getHttpDispatcherParser(contentType) != null;
+    }
+
+    @Override
+    public HttpDispatcherParser getHttpDispatcherParser(final String... contentTypes) {
+        if (contentTypes != null && contentTypes.length > 0) {
+            for (String contentType : contentTypes) {
+                if (contentType != null) {
+                    contentType = contentType.split(";")[0];
+
+                    final Matcher matcher = Pattern.compile("^(.*?)[; ].*$").matcher(contentType);
+                    contentType = (matcher.find() ? matcher.groupCount() == 1 ? matcher.group(0) : matcher.group(1)
+                            : contentType);
+
+                    for (final Map.Entry<String, HttpDispatcherParser> entry : httpDispatcherParsers.entrySet()) {
+                        if (entry.getKey().trim().equalsIgnoreCase(contentType.trim())) {
+                            return entry.getValue();
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object parseIncoming(final Reference<String> contentType, final byte[] bytes, final Class<?> objectClass) {
+        final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentType.get());
+
+        if (httpDispatcherParser == null) {
+            throw new HttpException(500, String.format("No parser for %s", contentType));
+        }
+
+        return httpDispatcherParser.parseIncoming(bytes, objectClass);
+    }
+
+    @Override
+    public byte[] parseOutgoing(final Reference<String> contentType, final boolean acceptContentType,
+            final Object object) {
+        final String[] contentTypes = contentType.get().split("\\,");
+        final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentTypes) != null
+                ? getHttpDispatcherParser(contentTypes)
+                : defaultOutgoingHttpDispatcherParser;
+
+        if (httpDispatcherParser == null) {
+            throw new HttpException(404, "No defaultOutgoingDispatcherParser setted");
+        }
+
+        if (acceptContentType
+                && !HttpDispatcherHelper.containsContentType(httpDispatcherParser.getContentTypes(), contentTypes)) {
+            throw new HttpException(404, String.format("No parser for: %s", contentType.get()));
+        }
+
+        return httpDispatcherParser.parseOutgoing(object);
+    }
 }

@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface UriVariable {
-	String value() default "";
+    String value() default "";
 }

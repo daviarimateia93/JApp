@@ -6,12 +6,12 @@ import japp.model.repository.RepositoryManager;
 import japp.model.service.ServiceFactory;
 
 public interface ModelAppConfiguration {
-	
-	public BusinessFactory getBusinessFactory();
-	
-	public RepositoryFactory getRepositoryFactory();
-	
-	public RepositoryManager getRepositoryManager();
-	
-	public ServiceFactory getServiceFactory();
+
+    public BusinessFactory getBusinessFactory();
+
+    public RepositoryFactory getRepositoryFactory();
+
+    public RepositoryManager getRepositoryManager();
+
+    public ServiceFactory getServiceFactory();
 }

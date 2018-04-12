@@ -12,11 +12,11 @@ import japp.web.dispatcher.http.request.RequestMethod;
 @Retention(value = RetentionPolicy.RUNTIME)
 @ProxyMethodInterceptable
 public @interface Requestable {
-	String value() default "";
-	
-	RequestMethod[] method() default { RequestMethod.GET };
-	
-	String[] produces() default {};
-	
-	String[] consumes() default {};
+    String value() default "";
+
+    RequestMethod[] method() default { RequestMethod.GET };
+
+    String[] produces() default {};
+
+    String[] consumes() default {};
 }

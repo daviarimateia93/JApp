@@ -11,5 +11,5 @@ import japp.util.ProxyMethodInterceptable;
 @Retention(RetentionPolicy.RUNTIME)
 @ProxyMethodInterceptable
 public @interface MetaAnnotation {
-	
+
 }

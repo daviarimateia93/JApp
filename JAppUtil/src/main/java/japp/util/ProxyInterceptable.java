@@ -1,6 +1,6 @@
 package japp.util;
 
 public interface ProxyInterceptable {
-	
-	public Object intercept(final ProxyMethodWrapper proxyMethodWrapper);
+
+    public Object intercept(final ProxyMethodWrapper proxyMethodWrapper);
 }

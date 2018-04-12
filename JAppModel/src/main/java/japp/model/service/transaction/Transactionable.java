@@ -11,10 +11,10 @@ import japp.util.ProxyMethodInterceptable;
 @Retention(RetentionPolicy.RUNTIME)
 @ProxyMethodInterceptable
 public @interface Transactionable {
-	
-	public static enum Mode {
-		CURRENT, CURRENT_OR_NEW, NEW
-	}
-	
-	Mode value() default Mode.CURRENT_OR_NEW;
+
+    public static enum Mode {
+        CURRENT, CURRENT_OR_NEW, NEW
+    }
+
+    Mode value() default Mode.CURRENT_OR_NEW;
 }
