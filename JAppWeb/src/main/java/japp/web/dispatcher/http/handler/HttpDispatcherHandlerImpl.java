@@ -75,8 +75,11 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
     }
 
     @Override
-    public void handle(final HttpDispatcherUriCompilation httpDispatcherUriCompilation,
-            final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
+    public void handle(
+            final HttpDispatcherUriCompilation httpDispatcherUriCompilation,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse) {
+
         final RequestMapping requestMapping = httpDispatcherUriCompilation.getRequestMapping();
         final HttpController httpController = requestMapping.getHttpController();
         final Method method = requestMapping.getMethod();
@@ -85,8 +88,11 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 
         try {
             parameters = getParameters(httpDispatcherUriCompilation, httpServletRequest, httpServletResponse);
-            methodReturnObject = parameters.values().isEmpty() ? method.invoke(httpController)
+
+            methodReturnObject = parameters.values().isEmpty()
+                    ? method.invoke(httpController)
                     : method.invoke(httpController, parameters.values().toArray());
+
         } catch (final IllegalArgumentException exception) {
             throw new HttpException(404);
         } catch (final IllegalAccessException | InvocationTargetException | IOException | ServletException exception) {
@@ -94,168 +100,222 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
         }
 
         if (methodReturnObject instanceof View) {
-            final View view = (View) methodReturnObject;
-            final String resolverPrefix = view.getLayoutName() == null
-                    ? WebApp.getWebAppConfiguration().getViewResolverPrefix()
-                    : WebApp.getWebAppConfiguration().getLayoutResolverPrefix();
-            final String resolverSuffix = view.getLayoutName() == null
-                    ? WebApp.getWebAppConfiguration().getViewResolverSuffix()
-                    : WebApp.getWebAppConfiguration().getLayoutResolverSuffix();
-            final String viewName;
-
-            if (view.getLayoutName() == null) {
-                viewName = view.getName();
-            } else {
-                viewName = view.getLayoutName();
-
-                httpServletRequest.setAttribute("__view__", WebApp.getWebAppConfiguration().getViewResolverPrefix()
-                        + view.getName() + WebApp.getWebAppConfiguration().getViewResolverSuffix());
-                httpServletRequest.setAttribute("__viewName__", view.getName());
-            }
-
-            httpServletRequest.setAttribute("__appName__", WebApp.getWebAppConfiguration().getAppName());
-            httpServletRequest.setAttribute("__appVersion__", WebApp.getWebAppConfiguration().getAppVersion());
-
-            try {
-                httpServletRequest.getRequestDispatcher(resolverPrefix + viewName + resolverSuffix)
-                        .forward(httpServletRequest, httpServletResponse);
-            } catch (final ServletException | IOException exception) {
-                throw new HttpException(500, exception);
-            }
+            handleView(methodReturnObject, httpServletRequest, httpServletResponse);
         } else if (!Void.TYPE.equals(method.getReturnType())) {
-            final String acceptContentType = httpServletRequest.getHeader("Accept");
-            final boolean useAcceptContentType = acceptContentType != null && !acceptContentType.equals("*/*");
-            final Reference<String> contentType = new Reference<>();
-
-            if (httpServletResponse.getContentType() == null) {
-                if (requestMapping.getProduces().length > 0) {
-                    contentType.set(requestMapping.getProduces()[0]);
-                } else if (useAcceptContentType) {
-                    contentType.set(acceptContentType);
-                } else {
-                    contentType.set(WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
-                }
-            } else {
-                contentType.set(httpServletResponse.getContentType());
-            }
-
-            final byte[] content = httpDispatcherParserManager.parseOutgoing(contentType, useAcceptContentType,
-                    methodReturnObject);
-
-            HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, 200, contentType.get(), content);
+            handleNonVoid(methodReturnObject, requestMapping, httpServletRequest, httpServletResponse);
         }
     }
 
-    protected Map<String, Object> getParameters(final HttpDispatcherUriCompilation httpDispatcherUriCompilation,
-            final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse)
+    protected void handleView(
+            final Object methodReturnObject,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse) {
+
+        final View view = (View) methodReturnObject;
+        final String viewResolverPrefix = WebApp.getWebAppConfiguration().getViewResolverPrefix();
+        final String viewResolverSuffix = WebApp.getWebAppConfiguration().getViewResolverSuffix();
+
+        final String resolverPrefix = view.getLayoutName() == null
+                ? viewResolverPrefix
+                : WebApp.getWebAppConfiguration().getLayoutResolverPrefix();
+
+        final String resolverSuffix = view.getLayoutName() == null
+                ? viewResolverSuffix
+                : WebApp.getWebAppConfiguration().getLayoutResolverSuffix();
+
+        final String viewName;
+
+        if (view.getLayoutName() == null) {
+            viewName = view.getName();
+        } else {
+            viewName = view.getLayoutName();
+
+            httpServletRequest.setAttribute("__view__", viewResolverPrefix + view.getName() + viewResolverSuffix);
+            httpServletRequest.setAttribute("__viewName__", view.getName());
+        }
+
+        httpServletRequest.setAttribute("__appName__", WebApp.getWebAppConfiguration().getAppName());
+        httpServletRequest.setAttribute("__appVersion__", WebApp.getWebAppConfiguration().getAppVersion());
+
+        try {
+            httpServletRequest
+                    .getRequestDispatcher(resolverPrefix + viewName + resolverSuffix)
+                    .forward(httpServletRequest, httpServletResponse);
+        } catch (final ServletException | IOException exception) {
+            throw new HttpException(500, exception);
+        }
+    }
+
+    protected void handleNonVoid(
+            final Object methodReturnObject,
+            final RequestMapping requestMapping,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse) {
+        final String acceptContentType = httpServletRequest.getHeader("Accept");
+        final boolean useAcceptContentType = acceptContentType != null && !acceptContentType.equals("*/*");
+        final String contentType;
+
+        if (httpServletResponse.getContentType() == null) {
+            if (requestMapping.getProduces().length > 0) {
+                contentType = requestMapping.getProduces()[0];
+            } else if (useAcceptContentType) {
+                contentType = acceptContentType;
+            } else {
+                contentType = WebApp.getWebAppConfiguration().getNonViewDefaultContentType();
+            }
+        } else {
+            contentType = httpServletResponse.getContentType();
+        }
+
+        final byte[] content = httpDispatcherParserManager
+                .parseOutgoing(contentType, useAcceptContentType, methodReturnObject);
+
+        HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, 200, contentType, content);
+    }
+
+    protected Map<String, Object> getParameters(
+            final HttpDispatcherUriCompilation httpDispatcherUriCompilation,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
+
         final Map<String, Object> parameters = new LinkedHashMap<>();
 
         for (final Parameter parameter : httpDispatcherUriCompilation.getRequestMapping().getMethod().getParameters()) {
+            final Class<?> type = parameter.getType();
+            final Reference<String> name = new Reference<>();
+            final Reference<Object> value = new Reference<>();
+
             final UriVariable uriVariable = parameter.isAnnotationPresent(UriVariable.class)
                     ? parameter.getAnnotation(UriVariable.class)
                     : null;
+
             final RequestParameter requestParameter = parameter.isAnnotationPresent(RequestParameter.class)
                     ? parameter.getAnnotation(RequestParameter.class)
                     : null;
+
             final RequestBody requestBody = parameter.isAnnotationPresent(RequestBody.class)
                     ? parameter.getAnnotation(RequestBody.class)
                     : null;
-            final Class<?> type = parameter.getType();
-
-            String name = parameter.getName();
-            Object value = null;
 
             if (uriVariable != null) {
-                if (!uriVariable.value().isEmpty()) {
-                    name = uriVariable.value();
-                }
-
-                value = generateBasicValue(httpDispatcherUriCompilation.getVariables().get(name), type);
+                setNameAndValueFromUriVariable(uriVariable, httpDispatcherUriCompilation, type, name, value);
             } else if (requestParameter != null) {
-                if (!requestParameter.value().isEmpty()) {
-                    name = requestParameter.value();
-                } else if (!parameter.isNamePresent()) {
-                    throw new HttpException(500, "-parameters compiler argument must be setted");
-                }
-
-                if (type.isArray()) {
-                    if (type.isAssignableFrom(Part.class)) {
-                        final String finalName = name;
-                        final List<Part> fileParts = httpServletRequest.getParts().stream()
-                                .filter(part -> finalName.equals(part.getName())).collect(Collectors.toList());
-
-                        value = fileParts.toArray();
-                    } else {
-                        final String[] parameterValues = httpServletRequest.getParameterValues(name);
-
-                        if (parameterValues != null) {
-                            final Object values = Array.newInstance(type.getComponentType(), parameterValues.length);
-
-                            for (int i = 0; i < parameterValues.length; i++) {
-                                Array.set(values, i, generateBasicValue(parameterValues[i], type.getComponentType()));
-                            }
-
-                            value = values;
-                        }
-                    }
-                } else {
-                    if (type.isAssignableFrom(Part.class)) {
-                        value = httpServletRequest.getPart(name);
-                    } else {
-                        value = generateBasicValue(httpServletRequest.getParameter(name), type);
-                    }
-                }
-
-                if (value == null && !requestParameter.defaultValue().isEmpty()) {
-                    value = ReflectionHelper.generateBasicValue(requestParameter.defaultValue(), type);
-                } else if (value == null && !requestParameter.required() && type.isPrimitive()) {
-                    value = ReflectionHelper.generateDefaultValue(type);
-                } else if (value == null && requestParameter.required()) {
-                    throw new HttpException(404);
-                }
+                setNameAndValueFromRequestParameter(requestParameter, parameter, type, httpServletRequest, name, value);
             } else if (requestBody != null) {
-                Object requestBodyObject = null;
-
-                if (Byte.class.isAssignableFrom(type)) {
-                    final byte[] bytes = getRequestBodyAsBytes(httpServletRequest);
-
-                    requestBodyObject = type.isArray() ? bytes : bytes.length > 0 ? bytes[0] : null;
-                } else {
-                    final byte[] requestBodyBytes = getRequestBodyAsBytes(httpServletRequest);
-
-                    requestBodyObject = generateBasicValue(StringHelper.toString(requestBodyBytes), type);
-
-                    if (requestBodyObject == null) {
-                        final Reference<String> contentType = new Reference<>(
-                                httpServletRequest.getContentType() != null ? httpServletRequest.getContentType()
-                                        : WebApp.getWebAppConfiguration().getNonViewDefaultContentType());
-
-                        requestBodyObject = httpDispatcherParserManager.parseIncoming(contentType, requestBodyBytes,
-                                type);
-                    }
-                }
-
-                value = requestBodyObject;
+                setValueFromRequestBody(requestBody, httpServletRequest, type, value);
             } else {
                 if (type.isAssignableFrom(HttpServletRequest.class)) {
-                    value = httpServletRequest;
+                    value.set(httpServletRequest);
                 } else if (type.isAssignableFrom(HttpServletResponse.class)) {
-                    value = httpServletResponse;
+                    value.set(httpServletResponse);
                 }
             }
 
-            parameters.put(name, value);
+            parameters.put(name.get(), value.get());
         }
 
         return parameters;
     }
 
-    protected String getRequestBodyAsString(final HttpServletRequest httpServletRequest) throws IOException {
-        return StringHelper.toString(getRequestBodyAsBytes(httpServletRequest));
+    protected void setNameAndValueFromUriVariable(
+            final UriVariable uriVariable,
+            final HttpDispatcherUriCompilation httpDispatcherUriCompilation,
+            final Class<?> type,
+            final Reference<String> name,
+            final Reference<Object> value) {
+
+        if (!uriVariable.value().isEmpty()) {
+            name.set(uriVariable.value());
+        }
+
+        value.set(generateBasicValue(httpDispatcherUriCompilation.getVariables().get(name.get()), type));
     }
 
-    protected byte[] getRequestBodyAsBytes(final HttpServletRequest httpServletRequest) throws IOException {
+    protected void setNameAndValueFromRequestParameter(
+            final RequestParameter requestParameter,
+            final Parameter parameter,
+            final Class<?> type,
+            final HttpServletRequest httpServletRequest,
+            final Reference<String> name,
+            final Reference<Object> value) throws IOException, ServletException {
+
+        if (!requestParameter.value().isEmpty()) {
+            name.set(requestParameter.value());
+        } else if (!parameter.isNamePresent()) {
+            throw new HttpException(500, "-parameters compiler argument must be setted");
+        }
+
+        if (type.isArray()) {
+            if (type.isAssignableFrom(Part.class)) {
+                final List<Part> fileParts = httpServletRequest
+                        .getParts()
+                        .stream()
+                        .filter(part -> name.get().equals(part.getName()))
+                        .collect(Collectors.toList());
+
+                value.set(fileParts.toArray());
+            } else {
+                final String[] parameterValues = httpServletRequest.getParameterValues(name.get());
+
+                if (parameterValues != null) {
+                    final Object values = Array.newInstance(type.getComponentType(), parameterValues.length);
+
+                    for (int i = 0; i < parameterValues.length; i++) {
+                        Array.set(values, i, generateBasicValue(parameterValues[i], type.getComponentType()));
+                    }
+
+                    value.set(values);
+                }
+            }
+        } else {
+            if (type.isAssignableFrom(Part.class)) {
+                value.set(httpServletRequest.getPart(name.get()));
+            } else {
+                value.set(generateBasicValue(httpServletRequest.getParameter(name.get()), type));
+            }
+        }
+
+        if (value.get() == null && !requestParameter.defaultValue().isEmpty()) {
+            value.set(ReflectionHelper.generateBasicValue(requestParameter.defaultValue(), type));
+        } else if (value.get() == null && !requestParameter.required() && type.isPrimitive()) {
+            value.set(ReflectionHelper.generateDefaultValue(type));
+        } else if (value.get() == null && requestParameter.required()) {
+            throw new HttpException(404);
+        }
+    }
+
+    protected void setValueFromRequestBody(
+            final RequestBody requestBody,
+            final HttpServletRequest httpServletRequest,
+            final Class<?> type,
+            final Reference<Object> value) throws IOException {
+
+        final byte[] requestBodyBytes = getRequestBodyAsBytes(httpServletRequest);
+
+        Object requestBodyObject = null;
+
+        if (Byte.class.isAssignableFrom(type)) {
+            requestBodyObject = type.isArray()
+                    ? requestBodyBytes
+                    : requestBodyBytes.length > 0 ? requestBodyBytes[0] : null;
+        } else {
+            requestBodyObject = generateBasicValue(StringHelper.toString(requestBodyBytes), type);
+
+            if (requestBodyObject == null) {
+                final String contentType = httpServletRequest.getContentType() != null
+                        ? httpServletRequest.getContentType()
+                        : WebApp.getWebAppConfiguration().getNonViewDefaultContentType();
+
+                requestBodyObject = httpDispatcherParserManager
+                        .parseIncoming(contentType, requestBodyBytes, type);
+            }
+        }
+
+        value.set(requestBodyObject);
+    }
+
+    private byte[] getRequestBodyAsBytes(final HttpServletRequest httpServletRequest) throws IOException {
         return ByteHelper.toBytes(httpServletRequest.getInputStream());
     }
 

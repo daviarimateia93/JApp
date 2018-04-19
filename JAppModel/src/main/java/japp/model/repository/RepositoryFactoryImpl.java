@@ -17,8 +17,10 @@ public class RepositoryFactoryImpl implements Singletonable, RepositoryFactory {
     }
 
     @Override
-    public <T extends Repository<?, ?>> Reference<T> getRepository(final Class<T> repositoryClass,
+    public <T extends Repository<?, ?>> Reference<T> getRepository(
+            final Class<T> repositoryClass,
             final EntityManager entityManager) {
+
         return SingletonFactory.getInstancePerThread(repositoryClass, new Class<?>[] { EntityManager.class },
                 entityManager);
     }

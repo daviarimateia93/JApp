@@ -1,16 +1,13 @@
 package japp.model.util;
 
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import japp.model.entity.Entity;
 import japp.util.ReflectionHelper;
@@ -22,46 +19,44 @@ public abstract class JpaHelper {
     }
 
     public static <T> T initialize(final T object) {
-        final Set<Object> visitedObjects = new LinkedHashSet<>();
+        return initialize(object, new LinkedHashSet<>());
+    }
 
-        final Stack<Object> stack = new Stack<>();
-        stack.push(object);
+    protected static <T> T initialize(final T object, final Set<Object> visitedObjects) {
+        if (object != null && !visitedObjects.contains(object)) {
+            visitedObjects.add(object);
 
-        while (!stack.isEmpty()) {
-            final Object popedObject = stack.pop();
+            if (ReflectionHelper.isMap(object)) {
+                for (final Object currentObject : ((Map<?, ?>) object).values()) {
+                    initialize(currentObject);
+                }
+            } else if (ReflectionHelper.isCollection(object)) {
+                for (final Object currentObject : (Collection<?>) object) {
+                    initialize(currentObject);
+                }
+            } else if (ReflectionHelper.isArray(object)) {
+                for (final Object currentObject : ReflectionHelper.getObjectArray(object)) {
+                    initialize(currentObject);
+                }
+            } else if (object instanceof Entity) {
+                try {
+                    for (final PropertyDescriptor propertyDescriptor : Introspector
+                            .getBeanInfo(object.getClass()).getPropertyDescriptors()) {
+                        final Method readMethod = propertyDescriptor.getReadMethod();
 
-            if (popedObject != null && !visitedObjects.contains(popedObject)) {
-                visitedObjects.add(popedObject);
+                        if (readMethod != null) {
+                            readMethod.setAccessible(true);
 
-                if (ReflectionHelper.isCollection(popedObject)) {
-                    for (final Object currentObject : (Collection<?>) popedObject) {
-                        stack.push(currentObject);
-                    }
-                } else if (ReflectionHelper.isArray(popedObject)) {
-                    for (final Object currentObject : ReflectionHelper.getObjectArray(popedObject)) {
-                        stack.push(currentObject);
-                    }
-                } else if (popedObject instanceof Entity) {
-                    try {
-                        for (final PropertyDescriptor propertyDescriptor : Introspector
-                                .getBeanInfo(popedObject.getClass()).getPropertyDescriptors()) {
-                            final Method readMethod = propertyDescriptor.getReadMethod();
+                            final Object fieldValue = readMethod.invoke(object);
 
-                            if (readMethod != null) {
-                                readMethod.setAccessible(true);
-
-                                final Object fieldValue = readMethod.invoke(popedObject);
-
-                                if (popedObject instanceof Entity || ReflectionHelper.isCollection(fieldValue)
-                                        || ReflectionHelper.isArray(fieldValue)) {
-                                    stack.push(fieldValue);
-                                }
+                            if (object instanceof Entity || ReflectionHelper.isCollection(fieldValue)
+                                    || ReflectionHelper.isArray(fieldValue)) {
+                                initialize(fieldValue);
                             }
                         }
-                    } catch (final IntrospectionException | IllegalAccessException | IllegalArgumentException
-                            | InvocationTargetException exception) {
-
                     }
+                } catch (final Exception exception) {
+                    // Lets ignore it
                 }
             }
         }
@@ -83,46 +78,50 @@ public abstract class JpaHelper {
             } else if (Collection.class.isAssignableFrom(provider.getClass())) {
                 mergeCollection((Collection) provider, (Collection) receiver, visitedObjects);
             } else {
-                try {
-                    for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(provider.getClass())
-                            .getPropertyDescriptors()) {
-                        final Method writeMethod = propertyDescriptor.getWriteMethod();
-                        final Method readMethod = propertyDescriptor.getReadMethod();
+                mergeObject(provider, receiver, visitedObjects);
+            }
+        }
+    }
 
-                        if (writeMethod != null && readMethod != null) {
-                            writeMethod.setAccessible(true);
-                            readMethod.setAccessible(true);
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected static <T, U> void mergeObject(final T provider, final T receiver, final Set<Object> visitedObjects) {
+        try {
+            for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(provider.getClass())
+                    .getPropertyDescriptors()) {
+                final Method writeMethod = propertyDescriptor.getWriteMethod();
+                final Method readMethod = propertyDescriptor.getReadMethod();
 
-                            final Object providerValue = readMethod.invoke(provider);
-                            final Object receiverValue = readMethod.invoke(receiver);
+                if (writeMethod != null && readMethod != null) {
+                    writeMethod.setAccessible(true);
+                    readMethod.setAccessible(true);
 
-                            if (providerValue == null || ReflectionHelper.isPrimitive(providerValue)
-                                    || ReflectionHelper.isEnum(providerValue) || ReflectionHelper.isDate(providerValue)
-                                    || ((!providerValue.equals(receiverValue) && providerValue instanceof Entity))) {
-                                writeMethod.invoke(receiver, providerValue);
-                            } else if (ReflectionHelper.isMap(providerValue)) {
-                                if (receiverValue == null) {
-                                    writeMethod.invoke(receiver, providerValue);
-                                } else {
-                                    mergeMap((Map) providerValue, (Map) receiverValue, visitedObjects);
-                                }
-                            } else if (ReflectionHelper.isCollection(providerValue)) {
-                                if (receiverValue == null) {
-                                    writeMethod.invoke(receiver, providerValue);
-                                } else {
-                                    mergeCollection((Collection) providerValue, (Collection) receiverValue,
-                                            visitedObjects);
-                                }
-                            } else {
-                                merge(providerValue, receiverValue, visitedObjects);
-                            }
+                    final Object providerValue = readMethod.invoke(provider);
+                    final Object receiverValue = readMethod.invoke(receiver);
+
+                    if (providerValue == null || ReflectionHelper.isPrimitive(providerValue)
+                            || ReflectionHelper.isEnum(providerValue) || ReflectionHelper.isDate(providerValue)
+                            || ((!providerValue.equals(receiverValue) && providerValue instanceof Entity))) {
+                        writeMethod.invoke(receiver, providerValue);
+                    } else if (ReflectionHelper.isMap(providerValue)) {
+                        if (receiverValue == null) {
+                            writeMethod.invoke(receiver, providerValue);
+                        } else {
+                            mergeMap((Map) providerValue, (Map) receiverValue, visitedObjects);
                         }
+                    } else if (ReflectionHelper.isCollection(providerValue)) {
+                        if (receiverValue == null) {
+                            writeMethod.invoke(receiver, providerValue);
+                        } else {
+                            mergeCollection((Collection) providerValue, (Collection) receiverValue,
+                                    visitedObjects);
+                        }
+                    } else {
+                        merge(providerValue, receiverValue, visitedObjects);
                     }
-                } catch (final IntrospectionException | IllegalAccessException | IllegalArgumentException
-                        | InvocationTargetException exception) {
-
                 }
             }
+        } catch (final Exception exception) {
+            // Lets ignore it
         }
     }
 

@@ -30,8 +30,9 @@ public class UriCompilerImpl implements Singletonable, UriCompiler {
         try {
             final Pattern pattern = Pattern.compile(PATTERN_VARIABLE);
             final Matcher patternMatcher = pattern.matcher(uriPattern);
-            final Pattern compiledPattern = Pattern.compile("^" + uriPattern.replaceAll(pattern.toString(),
-                    "([a-zA-Z0-9\\\\\\%\\\\\\-\\\\\\.\\\\\\_\\\\\\~\\\\\\:\\\\\\/\\\\\\?\\\\\\#\\\\\\[\\\\\\]\\\\\\@\\\\\\!\\\\\\$\\\\\\&\\\\\\'\\\\\\(\\\\\\)\\\\\\*\\\\\\+\\\\\\,\\\\\\;\\\\\\=]*?)")
+            final Pattern compiledPattern = Pattern.compile("^" +
+                    uriPattern.replaceAll(pattern.toString(),
+                            "([a-zA-Z0-9\\\\\\%\\\\\\-\\\\\\.\\\\\\_\\\\\\~\\\\\\:\\\\\\/\\\\\\?\\\\\\#\\\\\\[\\\\\\]\\\\\\@\\\\\\!\\\\\\$\\\\\\&\\\\\\'\\\\\\(\\\\\\)\\\\\\*\\\\\\+\\\\\\,\\\\\\;\\\\\\=]*?)")
                     + "$", Pattern.CASE_INSENSITIVE);
             final Matcher compiledPatternMatcher = compiledPattern.matcher(uriValue);
             final Float score = (float) uriPattern.replaceAll(PATTERN_VARIABLE, "").length();
@@ -55,7 +56,8 @@ public class UriCompilerImpl implements Singletonable, UriCompiler {
 
             return new UriCompilation(score, valid, uriPattern, compiledPattern.toString(), variables);
         } catch (final RuntimeException exception) {
-            throw new JAppRuntimeException(String.format("Was not possible to compile %s - %s", uriPattern, uriValue),
+            throw new JAppRuntimeException(
+                    String.format("Was not possible to compile %s - %s", uriPattern, uriValue),
                     exception);
         }
     }

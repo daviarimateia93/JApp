@@ -121,10 +121,9 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
             value = executeInCurrentOrNewTransaction(callable);
             break;
 
-        case NEW: {
+        case NEW:
             value = executeInNewTransaction(callable);
             break;
-        }
         }
 
         return value;

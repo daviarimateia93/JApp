@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import japp.util.Reference;
 import japp.util.SingletonFactory;
 import japp.util.Singletonable;
 import japp.web.dispatcher.http.HttpDispatcherHelper;
@@ -83,8 +82,8 @@ public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispa
     }
 
     @Override
-    public Object parseIncoming(final Reference<String> contentType, final byte[] bytes, final Class<?> objectClass) {
-        final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentType.get());
+    public Object parseIncoming(final String contentType, final byte[] bytes, final Class<?> objectClass) {
+        final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentType);
 
         if (httpDispatcherParser == null) {
             throw new HttpException(500, String.format("No parser for %s", contentType));
@@ -94,9 +93,8 @@ public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispa
     }
 
     @Override
-    public byte[] parseOutgoing(final Reference<String> contentType, final boolean acceptContentType,
-            final Object object) {
-        final String[] contentTypes = contentType.get().split("\\,");
+    public byte[] parseOutgoing(final String contentType, final boolean acceptContentType, final Object object) {
+        final String[] contentTypes = contentType.split("\\,");
         final HttpDispatcherParser httpDispatcherParser = getHttpDispatcherParser(contentTypes) != null
                 ? getHttpDispatcherParser(contentTypes)
                 : defaultOutgoingHttpDispatcherParser;
@@ -107,7 +105,7 @@ public class HttpDispatcherParserManagerImpl implements Singletonable, HttpDispa
 
         if (acceptContentType
                 && !HttpDispatcherHelper.containsContentType(httpDispatcherParser.getContentTypes(), contentTypes)) {
-            throw new HttpException(404, String.format("No parser for: %s", contentType.get()));
+            throw new HttpException(404, String.format("No parser for: %s", contentType));
         }
 
         return httpDispatcherParser.parseOutgoing(object);

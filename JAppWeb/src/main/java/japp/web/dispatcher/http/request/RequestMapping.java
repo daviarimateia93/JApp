@@ -13,8 +13,14 @@ public class RequestMapping {
     private final String[] produces;
     private final String[] consumes;
 
-    public RequestMapping(final HttpController httpController, final Method method, final RequestMethod requestMethod,
-            final String uriPattern, final String[] produces, final String[] consumes) {
+    public RequestMapping(
+            final HttpController httpController,
+            final Method method,
+            final RequestMethod requestMethod,
+            final String uriPattern,
+            final String[] produces,
+            final String[] consumes) {
+
         this.httpController = httpController;
         this.method = method;
         this.requestMethod = requestMethod;

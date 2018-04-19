@@ -11,12 +11,22 @@ public class UriCompilation {
     private final Map<String, String> variables;
 
     public UriCompilation(final UriCompilation uriCompilation) {
-        this(uriCompilation.getScore(), uriCompilation.isValid(), uriCompilation.getPattern(),
-                uriCompilation.getCompiledPattern(), uriCompilation.getVariables());
+
+        this(
+                uriCompilation.getScore(),
+                uriCompilation.isValid(),
+                uriCompilation.getPattern(),
+                uriCompilation.getCompiledPattern(),
+                uriCompilation.getVariables());
     }
 
-    public UriCompilation(final Float score, final Boolean valid, final String pattern, final String compiledPattern,
+    public UriCompilation(
+            final Float score,
+            final Boolean valid,
+            final String pattern,
+            final String compiledPattern,
             final Map<String, String> variables) {
+
         this.score = score;
         this.valid = valid;
         this.pattern = pattern;

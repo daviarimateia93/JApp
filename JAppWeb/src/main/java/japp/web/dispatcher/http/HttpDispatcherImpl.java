@@ -197,6 +197,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
                     final String[] produces = requestable.produces() != null && requestable.produces().length > 0
                             ? requestable.produces()
                             : rootRequestable.produces();
+
                     final String[] consumes = requestable.consumes() != null && requestable.consumes().length > 0
                             ? requestable.consumes()
                             : rootRequestable.consumes();
@@ -226,9 +227,13 @@ public class HttpDispatcherImpl implements HttpDispatcher {
                         }
                     }
 
-                    addRequestMapping(
-                            new RequestMapping(httpControllerFactory.getHttpController(httpControllerClass).get(),
-                                    method, requestMethod, uriPattern, produces, consumes));
+                    addRequestMapping(new RequestMapping(
+                            httpControllerFactory.getHttpController(httpControllerClass).get(),
+                            method,
+                            requestMethod,
+                            uriPattern,
+                            produces,
+                            consumes));
                 }
             }
         }
@@ -269,18 +274,22 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 
         for (final Map.Entry<String, RequestMapping> entry : requestMappings.entrySet()) {
             final RequestMapping requestMapping = entry.getValue();
+            final String acceptContentType = httpServletRequest.getHeader("Accept");
+            final String contentType = httpServletRequest.getContentType();
+
             final UriCompilation uriCompilation = uriCompiler.compile(requestMapping.getUriPattern(),
                     requestMapping.getUriPattern().endsWith("/") && !uriWithoutContextPath.endsWith("/")
                             ? uriWithoutContextPath + "/"
                             : uriWithoutContextPath);
-            final String acceptContentType = httpServletRequest.getHeader("Accept");
-            final String contentType = httpServletRequest.getContentType();
+
             final boolean requestMethodIsValid = requestMapping.getRequestMethod() == RequestMethod
                     .valueOf(httpServletRequest.getMethod().toUpperCase());
+
             final boolean consumesIsValid = requestMapping.getConsumes() != null
                     && requestMapping.getConsumes().length > 0
                             ? HttpDispatcherHelper.containsContentType(requestMapping.getConsumes(), contentType)
                             : true;
+
             final boolean producesIsValid = requestMapping.getProduces() != null
                     && requestMapping.getProduces().length > 0 && acceptContentType != null
                             ? HttpDispatcherHelper.containsContentType(requestMapping.getProduces(),
