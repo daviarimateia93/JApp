@@ -183,7 +183,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
 
         for (final Parameter parameter : httpDispatcherUriCompilation.getRequestMapping().getMethod().getParameters()) {
             final Class<?> type = parameter.getType();
-            final Reference<String> name = new Reference<>();
+            final Reference<String> name = new Reference<>(parameter.getName());
             final Reference<Object> value = new Reference<>();
 
             final UriVariable uriVariable = parameter.isAnnotationPresent(UriVariable.class)

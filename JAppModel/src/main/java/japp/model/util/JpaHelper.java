@@ -28,15 +28,15 @@ public abstract class JpaHelper {
 
             if (ReflectionHelper.isMap(object)) {
                 for (final Object currentObject : ((Map<?, ?>) object).values()) {
-                    initialize(currentObject);
+                    initialize(currentObject, visitedObjects);
                 }
             } else if (ReflectionHelper.isCollection(object)) {
                 for (final Object currentObject : (Collection<?>) object) {
-                    initialize(currentObject);
+                    initialize(currentObject, visitedObjects);
                 }
             } else if (ReflectionHelper.isArray(object)) {
                 for (final Object currentObject : ReflectionHelper.getObjectArray(object)) {
-                    initialize(currentObject);
+                    initialize(currentObject, visitedObjects);
                 }
             } else if (object instanceof Entity) {
                 try {
@@ -51,7 +51,7 @@ public abstract class JpaHelper {
 
                             if (object instanceof Entity || ReflectionHelper.isCollection(fieldValue)
                                     || ReflectionHelper.isArray(fieldValue)) {
-                                initialize(fieldValue);
+                                initialize(fieldValue, visitedObjects);
                             }
                         }
                     }
