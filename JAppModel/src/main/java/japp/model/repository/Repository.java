@@ -117,10 +117,8 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
     }
 
     protected void setQueryParameters(final Query query, final Object... parameters) {
-        if (parameters != null) {
-            for (int i = 0; i < parameters.length; i++) {
-                query.setParameter(i, parameters[i]);
-            }
+        for (int i = 0; i < parameters.length; i++) {
+            query.setParameter(i, parameters[i]);
         }
     }
 

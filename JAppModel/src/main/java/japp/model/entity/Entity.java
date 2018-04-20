@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.persistence.Id;
 
@@ -40,16 +39,16 @@ public abstract class Entity implements Serializable, Cloneable {
     }
 
     public List<Field> getFields(final Predicate<Field> predicate) {
-        final List<Field> idFields = new ArrayList<>();
+        final List<Field> filteredFields = new ArrayList<>();
         final List<Field> fields = ReflectionHelper.getFields(this);
 
         for (final Field field : fields) {
             if (predicate == null || predicate.test(field)) {
-                idFields.add(field);
+                filteredFields.add(field);
             }
         }
 
-        return idFields;
+        return filteredFields;
     }
 
     public Object getFieldValue(final Field field) {
@@ -77,9 +76,14 @@ public abstract class Entity implements Serializable, Cloneable {
         return getFieldsValues(getIdFields());
     }
 
-    @JsonIgnore
     public List<Object> getFieldsValues(final List<Field> fields) {
-        return fields.stream().map(this::getFieldValue).collect(Collectors.toList());
+        final List<Object> fieldsValues = new ArrayList<>();
+
+        for (final Field field : fields) {
+            fieldsValues.add(getFieldValue(field));
+        }
+
+        return fieldsValues;
     }
 
     public <T extends Entity> void merge(final T entity) {
