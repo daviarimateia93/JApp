@@ -52,13 +52,13 @@ public abstract class WsController extends Endpoint implements Controller {
 
     @SuppressWarnings("unchecked")
     public <T extends WsController> void broadcast(final SessionRunnable<T> sessionRunnable) {
-        for (final Session session : sessions) {
+        sessions.forEach(s -> {
             try {
-                sessionRunnable.run((T) this, session);
+                sessionRunnable.run((T) this, s);
             } catch (final ClassCastException exception) {
-                sessionRunnable.run(null, session);
+                sessionRunnable.run(null, s);
             }
-        }
+        });
     }
 
     public void sendSyncAsJson(final Session session, final Object object) {

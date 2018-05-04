@@ -69,7 +69,11 @@ public abstract class JpaHelper {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected static <T> void merge(final T provider, final T receiver, final Set<Object> visitedObjects) {
+    protected static <T> void merge(
+            final T provider,
+            final T receiver,
+            final Set<Object> visitedObjects) {
+
         if (!visitedObjects.contains(receiver)) {
             visitedObjects.add(receiver);
 
@@ -84,7 +88,11 @@ public abstract class JpaHelper {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected static <T, U> void mergeObject(final T provider, final T receiver, final Set<Object> visitedObjects) {
+    protected static <T, U> void mergeObject(
+            final T provider,
+            final T receiver,
+            final Set<Object> visitedObjects) {
+
         try {
             for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(provider.getClass())
                     .getPropertyDescriptors()) {
@@ -125,8 +133,11 @@ public abstract class JpaHelper {
         }
     }
 
-    protected static <T, U> void mergeMap(final Map<T, U> providers, final Map<T, U> receivers,
+    protected static <T, U> void mergeMap(
+            final Map<T, U> providers,
+            final Map<T, U> receivers,
             final Set<Object> visitedObjects) {
+
         for (final Map.Entry<T, U> providerEntry : providers.entrySet()) {
             if (receivers.containsKey(providerEntry.getKey())) {
                 merge(providerEntry.getValue(), receivers.get(providerEntry.getKey()), visitedObjects);
@@ -146,8 +157,11 @@ public abstract class JpaHelper {
         }
     }
 
-    protected static <T> void mergeCollection(final Collection<T> providers, final Collection<T> receivers,
+    protected static <T> void mergeCollection(
+            final Collection<T> providers,
+            final Collection<T> receivers,
             final Set<Object> visitedObjects) {
+
         for (final T provider : providers) {
             if (receivers.contains(provider)) {
                 for (final T receiver : receivers) {

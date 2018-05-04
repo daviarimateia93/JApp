@@ -1,5 +1,7 @@
 package japp.web.dispatcher.http.parser;
 
+import java.util.Optional;
+
 public interface HttpDispatcherParserManager {
 
     public void setDefaultOutgoingHttpDispatcherParser(final HttpDispatcherParser httpDispatcherParser);
@@ -12,7 +14,7 @@ public interface HttpDispatcherParserManager {
 
     public boolean containsHttpDispatcherParser(final String contentType);
 
-    public HttpDispatcherParser getHttpDispatcherParser(final String... contentTypes);
+    public Optional<HttpDispatcherParser> getHttpDispatcherParser(final String... contentTypes);
 
     public Object parseIncoming(final String contentType, final byte[] bytes, final Class<?> objectClass);
 

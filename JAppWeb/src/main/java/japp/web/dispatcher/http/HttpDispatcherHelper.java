@@ -1,6 +1,7 @@
 package japp.web.dispatcher.http;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,37 +21,22 @@ public abstract class HttpDispatcherHelper {
     }
 
     public static boolean containsContentType(final String[] sourceContentTypes, final String... contentTypes) {
-        if (contentTypes != null && contentTypes.length > 0) {
-            for (String contentType : contentTypes) {
-                contentType = contentType.split(";")[0];
-
-                if (contentType.equals("*/*")) {
-                    return true;
-                }
-
-                if (containsContentType(sourceContentTypes, contentType)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return Arrays.stream(contentTypes)
+                .map(ct -> ct.split(";")[0])
+                .anyMatch(ct -> ct.equals("*/*") || containsContentType(sourceContentTypes, ct));
     }
 
     public static boolean containsContentType(final String[] sourceContentTypes, final String contentType) {
-        if (sourceContentTypes != null && sourceContentTypes.length > 0) {
-            for (final String sourceContentType : sourceContentTypes) {
-                if (sourceContentType.equalsIgnoreCase(contentType)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return Arrays.stream(sourceContentTypes)
+                .anyMatch(sct -> sct.equalsIgnoreCase(contentType));
     }
 
-    public static void httpServletResponseWrite(final HttpServletResponse httpServletResponse, final int httpStatusCode,
-            final String contentType, final byte[] content) {
+    public static void httpServletResponseWrite(
+            final HttpServletResponse httpServletResponse,
+            final int httpStatusCode,
+            final String contentType,
+            final byte[] content) {
+
         try {
             httpServletResponse.setStatus(httpStatusCode);
             httpServletResponse.setContentType(contentType);

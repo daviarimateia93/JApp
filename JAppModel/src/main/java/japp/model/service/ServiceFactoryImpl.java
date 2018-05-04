@@ -23,7 +23,9 @@ public class ServiceFactoryImpl implements Singletonable, ServiceFactory {
 
     @Override
     public <T extends Service> Reference<T> getService(final Class<T> serviceClass, final EntityManager entityManager) {
-        return SingletonFactory.getProxyInterceptableInstancePerThread(serviceClass,
-                new Class<?>[] { EntityManager.class }, entityManager);
+        return SingletonFactory.getProxyInterceptableInstancePerThread(
+                serviceClass,
+                new Class<?>[] { EntityManager.class },
+                entityManager);
     }
 }

@@ -151,6 +151,7 @@ public class HttpDispatcherHandlerImpl implements HttpDispatcherHandler {
             final RequestMapping requestMapping,
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) {
+        
         final String acceptContentType = httpServletRequest.getHeader("Accept");
         final boolean useAcceptContentType = acceptContentType != null && !acceptContentType.equals("*/*");
         final String contentType;

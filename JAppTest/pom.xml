@@ -3,7 +3,7 @@
     <parent>
         <groupId>japp</groupId>
         <artifactId>JApp</artifactId>
-        <version>0.0.13</version>
+        <version>0.0.15</version>
     </parent>
     <artifactId>JAppTest</artifactId>
     <name>JAppTest</name>

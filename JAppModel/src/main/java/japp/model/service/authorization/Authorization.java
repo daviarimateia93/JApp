@@ -8,8 +8,11 @@ public class Authorization {
     private final Object authorizationObject;
     private final ProxyMethodWrapper proxyMethodWrapper;
 
-    public Authorization(final Class<?> authorizationClass, final Object authorizationObject,
+    public Authorization(
+            final Class<?> authorizationClass, 
+            final Object authorizationObject,
             final ProxyMethodWrapper proxyMethodWrapper) {
+        
         this.authorizationClass = authorizationClass;
         this.authorizationObject = authorizationObject;
         this.proxyMethodWrapper = proxyMethodWrapper;

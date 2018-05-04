@@ -40,8 +40,12 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
                 ModelApp.getModelAppConfiguration().getRepositoryManager(), entityManager);
     }
 
-    protected Service(final BusinessFactory businessFactory, final RepositoryFactory repositoryFactory,
-            final RepositoryManager repositoryManager, final EntityManager entityManager) {
+    protected Service(
+            final BusinessFactory businessFactory,
+            final RepositoryFactory repositoryFactory,
+            final RepositoryManager repositoryManager,
+            final EntityManager entityManager) {
+
         this.businessFactory = businessFactory;
         this.repositoryFactory = repositoryFactory;
         this.repositoryManager = repositoryManager;
@@ -97,16 +101,16 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
         return true;
     }
 
-    protected Object interceptTransactionable(final Transactionable transactionable, final Authorizable authorizable,
+    protected Object interceptTransactionable(
+            final Transactionable transactionable,
+            final Authorizable authorizable,
             final ProxyMethodWrapper proxyMethodWrapper) {
-        final Callable<Object> callable = new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                if (authorizable != null) {
-                    return interceptAuthorizable(authorizable, proxyMethodWrapper);
-                } else {
-                    return proxyMethodWrapper.invoke();
-                }
+
+        final Callable<Object> callable = () -> {
+            if (authorizable != null) {
+                return interceptAuthorizable(authorizable, proxyMethodWrapper);
+            } else {
+                return proxyMethodWrapper.invoke();
             }
         };
 
@@ -129,16 +133,22 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
         return value;
     }
 
-    protected Object interceptAuthorizable(final Authorizable authorizable,
+    protected Object interceptAuthorizable(
+            final Authorizable authorizable,
             final ProxyMethodWrapper proxyMethodWrapper) {
+
         Authorization authorization = null;
 
         for (int i = 0; i < proxyMethodWrapper.getMethod().getParameters().length; i++) {
             final Parameter parameter = proxyMethodWrapper.getMethod().getParameters()[i];
 
-            if (parameter.isAnnotationPresent(Authorizer.class) && proxyMethodWrapper.getParameters() != null
+            if (parameter.isAnnotationPresent(Authorizer.class)
+                    && proxyMethodWrapper.getParameters() != null
                     && proxyMethodWrapper.getParameters().length >= i) {
-                authorization = new Authorization(parameter.getType(), proxyMethodWrapper.getParameters()[i],
+
+                authorization = new Authorization(
+                        parameter.getType(),
+                        proxyMethodWrapper.getParameters()[i],
                         proxyMethodWrapper);
             }
         }
@@ -165,13 +175,19 @@ public abstract class Service implements Singletonable, ProxyInterceptable {
     public Object intercept(final ProxyMethodWrapper proxyMethodWrapper) {
         if (proxyMethodWrapper.getMethod().isAnnotationPresent(Transactionable.class)
                 && proxyMethodWrapper.getMethod().isAnnotationPresent(Authorizable.class)) {
-            return interceptTransactionable(proxyMethodWrapper.getMethod().getAnnotation(Transactionable.class),
-                    proxyMethodWrapper.getMethod().getAnnotation(Authorizable.class), proxyMethodWrapper);
-        } else if (proxyMethodWrapper.getMethod().isAnnotationPresent(Transactionable.class)) {
-            return interceptTransactionable(proxyMethodWrapper.getMethod().getAnnotation(Transactionable.class), null,
+            return interceptTransactionable(
+                    proxyMethodWrapper.getMethod().getAnnotation(Transactionable.class),
+                    proxyMethodWrapper.getMethod().getAnnotation(Authorizable.class),
                     proxyMethodWrapper);
+        } else if (proxyMethodWrapper.getMethod().isAnnotationPresent(Transactionable.class)) {
+            return interceptTransactionable(
+                    proxyMethodWrapper.getMethod().getAnnotation(Transactionable.class),
+                    null,
+                    proxyMethodWrapper);
+
         } else if (proxyMethodWrapper.getMethod().isAnnotationPresent(Authorizable.class)) {
-            return interceptAuthorizable(proxyMethodWrapper.getMethod().getAnnotation(Authorizable.class),
+            return interceptAuthorizable(
+                    proxyMethodWrapper.getMethod().getAnnotation(Authorizable.class),
                     proxyMethodWrapper);
         } else {
             return proxyMethodWrapper.invoke();

@@ -33,23 +33,33 @@ public abstract class WebApp {
     }
 
     public static <T extends Service> Reference<T> getService(final Class<T> serviceClass) {
-        return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass);
+        return ModelApp.getModelAppConfiguration()
+                .getServiceFactory()
+                .getService(serviceClass);
     }
 
-    public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass,
+    public static <T extends Service> Reference<T> getPersistenceService(
+            final Class<T> serviceClass,
             final EntityManager entityManager) {
-        return ModelApp.getModelAppConfiguration().getServiceFactory().getService(serviceClass, entityManager);
+
+        return ModelApp.getModelAppConfiguration()
+                .getServiceFactory()
+                .getService(serviceClass, entityManager);
     }
 
     public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass) {
         return getPersistenceService(serviceClass, (HttpServletRequest) null);
     }
 
-    public static <T extends Service> Reference<T> getPersistenceService(final Class<T> serviceClass,
+    public static <T extends Service> Reference<T> getPersistenceService(
+            final Class<T> serviceClass,
             final HttpServletRequest httpServletRequest) {
+
         return getPersistenceService(serviceClass,
-                ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(
-                        WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest),
-                        WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+                ModelApp.getModelAppConfiguration()
+                        .getRepositoryManager()
+                        .getEntityManager(
+                                WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest),
+                                WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
     }
 }

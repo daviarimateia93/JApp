@@ -23,7 +23,9 @@ public abstract class Business implements Singletonable {
                 ModelApp.getModelAppConfiguration().getRepositoryFactory(), entityManager);
     }
 
-    protected Business(final BusinessFactory businessFactory, final RepositoryFactory repositoryFactory,
+    protected Business(
+            final BusinessFactory businessFactory,
+            final RepositoryFactory repositoryFactory,
             final EntityManager entityManager) {
         this.businessFactory = businessFactory;
         this.repositoryFactory = repositoryFactory;
@@ -43,10 +45,10 @@ public abstract class Business implements Singletonable {
     }
 
     protected <T extends Business> Reference<T> getBusiness(final Class<T> businessClass) {
-        return businessFactory.getBusiness(businessClass, entityManager);
+        return getBusinessFactory().getBusiness(businessClass, entityManager);
     }
 
     protected <T extends Repository<?, ?>> Reference<T> getRepository(final Class<T> repositoryClass) {
-        return repositoryFactory.getRepository(repositoryClass, entityManager);
+        return getRepositoryFactory().getRepository(repositoryClass, entityManager);
     }
 }

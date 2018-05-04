@@ -3,6 +3,7 @@ package japp.web.dispatcher.http;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,10 +78,14 @@ public class HttpDispatcherImpl implements HttpDispatcher {
     public void dispatch(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
         try {
             final boolean isOpenSessionView = WebApp.getWebAppConfiguration().isOpenSessionView();
+
             final HttpDispatcherUriCompilation httpDispatcherUriCompilation = getHttpDispatcherUriCompilation(
                     httpServletRequest);
-            final Runnable runnable = () -> httpDispatcherHandler.handle(httpDispatcherUriCompilation,
-                    httpServletRequest, httpServletResponse);
+
+            final Runnable runnable = () -> httpDispatcherHandler.handle(
+                    httpDispatcherUriCompilation,
+                    httpServletRequest,
+                    httpServletResponse);
 
             if (isOpenSessionView) {
                 dispatchInOpenSessionView(httpServletRequest, runnable);
@@ -92,19 +97,26 @@ public class HttpDispatcherImpl implements HttpDispatcher {
         }
     }
 
-    private void dispatchInOpenSessionView(final HttpServletRequest httpServletRequest, final Runnable runnable)
+    protected void dispatchInOpenSessionView(
+            final HttpServletRequest httpServletRequest,
+            final Runnable runnable)
             throws Exception {
+
         final Reference<Exception> threadException = new Reference<>();
         final Reference<EntityManager> entityManager = new Reference<>();
 
         ThreadHelper.executeInNewThreadAndJoin(() -> {
             try {
-                entityManager.set(ModelApp.getModelAppConfiguration().getRepositoryManager().getEntityManager(
-                        WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest),
-                        WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
+                entityManager.set(
+                        ModelApp.getModelAppConfiguration()
+                                .getRepositoryManager()
+                                .getEntityManager(
+                                        WebApp.getWebAppConfiguration().getPersistenceUnitName(httpServletRequest),
+                                        WebApp.getWebAppConfiguration().getPersistenceProperties(httpServletRequest)));
 
-                ModelApp.getModelAppConfiguration().getRepositoryManager().executeInNewTransaction(entityManager.get(),
-                        runnable);
+                ModelApp.getModelAppConfiguration()
+                        .getRepositoryManager()
+                        .executeInNewTransaction(entityManager.get(), runnable);
 
                 if (entityManager.get().isOpen()) {
                     entityManager.get().close();
@@ -124,10 +136,14 @@ public class HttpDispatcherImpl implements HttpDispatcher {
     }
 
     @Override
-    public void handleUncaughtException(final Exception uncaughtException, final HttpServletRequest httpServletRequest,
+    public void handleUncaughtException(
+            final Exception uncaughtException,
+            final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) {
+
         final int httpStatusCode = getHttpStatusCode(uncaughtException);
         final String httpMessage = getHttpMessage(uncaughtException);
+
         final StringBuilder contentStringBuilder = new StringBuilder();
         contentStringBuilder.append(StringHelper.isNullOrEmpty(httpMessage) ? "" : httpMessage);
 
@@ -137,11 +153,14 @@ public class HttpDispatcherImpl implements HttpDispatcher {
             contentStringBuilder.append("\r\n" + ExceptionHelper.getStackTraceAsString(uncaughtException));
         }
 
-        HttpDispatcherHelper.httpServletResponseWrite(httpServletResponse, httpStatusCode, "text/plain",
+        HttpDispatcherHelper.httpServletResponseWrite(
+                httpServletResponse,
+                httpStatusCode,
+                "text/plain",
                 ByteHelper.toBytes(contentStringBuilder.toString()));
     }
 
-    private int getHttpStatusCode(final Exception exception) {
+    protected int getHttpStatusCode(final Exception exception) {
         final Throwable rootCause = ExceptionHelper.getRootCause(exception);
         final int statusCode;
 
@@ -160,7 +179,7 @@ public class HttpDispatcherImpl implements HttpDispatcher {
         return statusCode;
     }
 
-    private String getHttpMessage(final Exception exception) {
+    protected String getHttpMessage(final Exception exception) {
         final Throwable rootCause = ExceptionHelper.getRootCause(exception);
 
         return exception instanceof HttpException ? exception.getMessage() : rootCause.getMessage();
@@ -173,70 +192,101 @@ public class HttpDispatcherImpl implements HttpDispatcher {
 
     @Override
     public <T extends HttpController> void register(final Class<T> httpControllerClass) {
-        final String servletContextConfiguration = HttpDispatcherServlet.getConfiguration("servlet-context");
         final Requestable rootRequestable = httpControllerClass.isAnnotationPresent(Requestable.class)
                 ? httpControllerClass.getAnnotation(Requestable.class)
                 : null;
 
-        for (final Method method : httpControllerClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Requestable.class)) {
-                if (!Modifier.isPublic(method.getModifiers())) {
-                    throw new JAppRuntimeException(String.format("%s must be public", method.getName()));
-                }
-
-                final Requestable requestable = method.getAnnotation(Requestable.class);
-                final RequestMethod[] requestMethods = requestable.method().length > 0 ? requestable.method()
-                        : rootRequestable.method();
-
-                if (requestMethods.length == 0) {
-                    throw new JAppRuntimeException(String.format("%s and %s has no request method",
-                            httpControllerClass.getName(), method.getName()));
-                }
-
-                for (final RequestMethod requestMethod : requestMethods) {
-                    final String[] produces = requestable.produces() != null && requestable.produces().length > 0
-                            ? requestable.produces()
-                            : rootRequestable.produces();
-
-                    final String[] consumes = requestable.consumes() != null && requestable.consumes().length > 0
-                            ? requestable.consumes()
-                            : rootRequestable.consumes();
-
-                    String uriPattern = (!StringHelper.isBlank(requestable.value())
-                            ? rootRequestable.value() + requestable.value()
-                            : rootRequestable.value()).trim();
-
-                    if (servletContextConfiguration != null && servletContextConfiguration.endsWith("/")
-                            && uriPattern.startsWith("/")) {
-                        uriPattern = uriPattern.substring(1);
+        Arrays.stream(httpControllerClass.getDeclaredMethods())
+                .filter(m -> m.isAnnotationPresent(Requestable.class))
+                .forEach(m -> {
+                    if (!Modifier.isPublic(m.getModifiers())) {
+                        throw new JAppRuntimeException(String.format("%s must be public", m.getName()));
                     }
 
-                    uriPattern = (servletContextConfiguration == null ? "" : servletContextConfiguration) + uriPattern;
+                    final Requestable requestable = m.getAnnotation(Requestable.class);
 
-                    if (uriPattern.isEmpty()) {
-                        uriPattern = "/";
-                    } else {
-                        if (uriPattern.startsWith("//")) {
-                            uriPattern = uriPattern.substring(1);
-                        } else if (!uriPattern.startsWith("/")) {
-                            uriPattern = "/" + uriPattern;
-                        }
+                    final RequestMethod[] requestMethods = requestable.method().length > 0
+                            ? requestable.method()
+                            : rootRequestable.method();
 
-                        if (uriPattern.endsWith("//")) {
-                            uriPattern = uriPattern.substring(0, uriPattern.length() - 1);
-                        }
+                    if (requestMethods.length == 0) {
+                        throw new JAppRuntimeException(String.format("%s and %s has no request method",
+                                httpControllerClass.getName(), m.getName()));
                     }
 
-                    addRequestMapping(new RequestMapping(
-                            httpControllerFactory.getHttpController(httpControllerClass).get(),
-                            method,
-                            requestMethod,
-                            uriPattern,
-                            produces,
-                            consumes));
-                }
+                    Arrays.stream(requestMethods)
+                            .map(rm -> createRequestMapping(
+                                    m,
+                                    rm,
+                                    rootRequestable,
+                                    requestable,
+                                    httpControllerClass))
+                            .forEach(this::addRequestMapping);
+                });
+    }
+
+    private <T extends HttpController> RequestMapping createRequestMapping(
+            final Method method,
+            final RequestMethod requestMethod,
+            final Requestable rootRequestable,
+            final Requestable requestable,
+            final Class<T> httpControllerClass) {
+
+        final String[] produces = requestable.produces() != null
+                && requestable.produces().length > 0
+                        ? requestable.produces()
+                        : rootRequestable.produces();
+
+        final String[] consumes = requestable.consumes() != null
+                && requestable.consumes().length > 0
+                        ? requestable.consumes()
+                        : rootRequestable.consumes();
+
+        final String uriPattern = createUriPattern(rootRequestable, requestable);
+
+        return new RequestMapping(
+                httpControllerFactory.getHttpController(httpControllerClass).get(),
+                method,
+                requestMethod,
+                uriPattern,
+                produces,
+                consumes);
+    }
+
+    private String createUriPattern(
+            final Requestable rootRequestable,
+            final Requestable requestable) {
+
+        final String servletContextConfiguration = HttpDispatcherServlet.getConfiguration("servlet-context");
+
+        String uriPattern = (!StringHelper.isBlank(requestable.value())
+                ? rootRequestable.value() + requestable.value()
+                : rootRequestable.value()).trim();
+
+        if (servletContextConfiguration != null
+                && servletContextConfiguration.endsWith("/")
+                && uriPattern.startsWith("/")) {
+            uriPattern = uriPattern.substring(1);
+        }
+
+        uriPattern = (servletContextConfiguration == null ? "" : servletContextConfiguration)
+                + uriPattern;
+
+        if (uriPattern.isEmpty()) {
+            uriPattern = "/";
+        } else {
+            if (uriPattern.startsWith("//")) {
+                uriPattern = uriPattern.substring(1);
+            } else if (!uriPattern.startsWith("/")) {
+                uriPattern = "/" + uriPattern;
+            }
+
+            if (uriPattern.endsWith("//")) {
+                uriPattern = uriPattern.substring(0, uriPattern.length() - 1);
             }
         }
+
+        return uriPattern;
     }
 
     protected String getRequestMappingKey(final RequestMapping requestMapping) {
@@ -301,13 +351,10 @@ public class HttpDispatcherImpl implements HttpDispatcher {
             }
         }
 
-        final HttpDispatcherUriCompilation httpDispatcherUriCompilation = getHigherScoreHttpDispatcherUriCompilation(
-                httpDispatcherUriCompilations);
-
-        if (httpDispatcherUriCompilation == null) {
-            throw new HttpException(404, String.format("No request mapping found for %s", uriWithoutContextPath));
-        } else {
-            return httpDispatcherUriCompilation;
-        }
+        return httpDispatcherUriCompilations
+                .stream()
+                .reduce((x, y) -> x == null || x.getScore() < y.getScore() ? y : x)
+                .orElseThrow(() -> new HttpException(404,
+                        String.format("No request mapping found for %s", uriWithoutContextPath)));
     }
 }

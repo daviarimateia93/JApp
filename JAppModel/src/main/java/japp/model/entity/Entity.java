@@ -2,9 +2,9 @@ package japp.model.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.persistence.Id;
 
@@ -39,16 +39,10 @@ public abstract class Entity implements Serializable, Cloneable {
     }
 
     public List<Field> getFields(final Predicate<Field> predicate) {
-        final List<Field> filteredFields = new ArrayList<>();
-        final List<Field> fields = ReflectionHelper.getFields(this);
-
-        for (final Field field : fields) {
-            if (predicate == null || predicate.test(field)) {
-                filteredFields.add(field);
-            }
-        }
-
-        return filteredFields;
+        return ReflectionHelper.getFields(this)
+                .stream()
+                .filter(f -> predicate == null || predicate.test(f))
+                .collect(Collectors.toList());
     }
 
     public Object getFieldValue(final Field field) {
@@ -77,13 +71,9 @@ public abstract class Entity implements Serializable, Cloneable {
     }
 
     public List<Object> getFieldsValues(final List<Field> fields) {
-        final List<Object> fieldsValues = new ArrayList<>();
-
-        for (final Field field : fields) {
-            fieldsValues.add(getFieldValue(field));
-        }
-
-        return fieldsValues;
+        return fields.stream()
+                .map(this::getFieldValue)
+                .collect(Collectors.toList());
     }
 
     public <T extends Entity> void merge(final T entity) {
@@ -98,21 +88,17 @@ public abstract class Entity implements Serializable, Cloneable {
     @Override
     public String toString() {
         final List<Object> idFieldsValues = getIdFieldsValues();
-        final List<Object> values = idFieldsValues.isEmpty()
-                || idFieldsValues.stream().anyMatch(object -> object == null) ? getNonJsonIgnoreFieldsValues()
-                        : idFieldsValues;
+        final boolean idFieldsValuesHasNull = idFieldsValues.stream().anyMatch(object -> object == null);
 
-        final StringBuilder stringBuilder = new StringBuilder();
+        final List<Object> values = idFieldsValues.isEmpty() || idFieldsValuesHasNull
+                ? getNonJsonIgnoreFieldsValues()
+                : idFieldsValues;
 
-        for (int i = 0; i < values.size(); i++) {
-            if (i > 0) {
-                stringBuilder.append(";");
-            }
-
-            stringBuilder.append(values.get(i));
-        }
-
-        return stringBuilder.toString();
+        return String.join(";",
+                values.stream()
+                        .filter(v -> v != null)
+                        .map(Object::toString)
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -154,15 +140,12 @@ public abstract class Entity implements Serializable, Cloneable {
 
     @Override
     public int hashCode() {
+        final int classNameHashCode = getClass().getName().hashCode();
         final int prime = 31;
 
-        int result = 1;
-
-        for (final Object idFieldValue : getIdFieldsValues()) {
-            result = prime * result + (idFieldValue == null ? 0 : idFieldValue.hashCode())
-                    + getClass().getName().hashCode();
-        }
-
-        return result;
+        return getIdFieldsValues()
+                .stream()
+                .mapToInt(o -> o == null ? 0 : o.hashCode())
+                .reduce(0, (x, y) -> prime * x + y + classNameHashCode);
     }
 }

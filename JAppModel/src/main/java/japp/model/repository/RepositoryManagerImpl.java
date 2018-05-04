@@ -39,8 +39,10 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
     }
 
     @Override
-    public synchronized EntityManager getEntityManager(final String persistenceUnitName,
+    public synchronized EntityManager getEntityManager(
+            final String persistenceUnitName,
             final Map<?, ?> persistenceProperties) {
+
         final String persistencePropertiesHash = getEntityManagerHash(persistenceUnitName, persistenceProperties);
 
         if (!entityManagerFactories.containsKey(persistencePropertiesHash)) {
@@ -65,25 +67,21 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
     @Override
     public synchronized void closeEntityManager() {
         if (entityManagers.get() != null) {
-            for (final Map.Entry<String, EntityManager> entry : entityManagers.get().entrySet()) {
-                final EntityManager entityManager = entry.getValue();
-
-                if (entityManager.isOpen()) {
-                    entityManager.close();
+            entityManagers.get().entrySet().forEach(e -> {
+                if (e.getValue().isOpen()) {
+                    e.getValue().close();
                 }
-            }
+            });
         }
     }
 
     @Override
     public synchronized void closeEntityManagerFactory() {
-        for (Map.Entry<String, EntityManagerFactory> entry : entityManagerFactories.entrySet()) {
-            final EntityManagerFactory entityManagerFactory = entry.getValue();
-
-            if (entityManagerFactory.isOpen()) {
-                entityManagerFactory.close();
+        entityManagerFactories.entrySet().forEach(e -> {
+            if (e.getValue().isOpen()) {
+                e.getValue().close();
             }
-        }
+        });
     }
 
     @Override
@@ -162,12 +160,12 @@ public class RepositoryManagerImpl implements Singletonable, RepositoryManager {
         final StringBuilder stringBuilder = new StringBuilder("persistenceUnitName=" + persistenceUnitName + ";");
 
         if (persistenceProperties != null) {
-            for (final Map.Entry<?, ?> entry : persistenceProperties.entrySet()) {
-                stringBuilder.append(entry.getKey());
+            persistenceProperties.entrySet().forEach(e -> {
+                stringBuilder.append(e.getKey());
                 stringBuilder.append("=");
-                stringBuilder.append(entry.getValue());
+                stringBuilder.append(e.getValue());
                 stringBuilder.append(";");
-            }
+            });
         }
 
         return stringBuilder.toString();
