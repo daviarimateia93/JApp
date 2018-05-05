@@ -295,8 +295,13 @@ public abstract class Repository<T extends Entity, U> implements Singletonable {
     }
 
     protected String getQueryGlue(final String query) {
-        return Arrays.stream(getQuerySplitter().split(query))
-                .anyMatch(qf -> getDateParser().parseDateTime(qf) != null
-                        || getDateParser().parseDate(qf) != null) ? "OR" : "AND";
+        final String[] splittedQuery = querySplitter.split(query);
+        
+        final int counter = Arrays.stream(splittedQuery)
+                .filter(qf -> getDateParser().parseDateTime(qf) != null || getDateParser().parseDate(qf) != null)
+                .map(qf -> 1)
+                .reduce(splittedQuery.length, (x, y) -> x--);
+
+        return counter > 0 && counter < splittedQuery.length ? "AND" : "OR";
     }
 }
