@@ -8,7 +8,7 @@ public class Reference<T> {
 
     }
 
-    public Reference(T value) {
+    public Reference(final T value) {
         this.value = value;
     }
 

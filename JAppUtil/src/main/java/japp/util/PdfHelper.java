@@ -24,11 +24,13 @@ public abstract class PdfHelper {
 
     public static void convert(final String input, final OutputStream outputStream)
             throws DocumentException, ParserConfigurationException, TransformerException, UnsupportedEncodingException {
+        
         convert(new ByteArrayInputStream(ByteHelper.toBytes(input)), outputStream);
     }
 
     public static void convert(final InputStream inputStream, final OutputStream outputStream)
             throws DocumentException, ParserConfigurationException, TransformerException {
+        
         final Tidy tidy = new Tidy();
         tidy.setInputEncoding(CHARSET_UTF_8);
         tidy.setOutputEncoding(CHARSET_UTF_8);

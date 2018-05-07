@@ -15,11 +15,13 @@ public abstract class PropertiesHelper {
 
     public static Properties load(final String path, final String profile) {
         final String suffix = StringHelper.isNullOrBlank(profile) ? "" : "-" + profile;
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
 
         try {
-            properties.load(
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream(path + suffix + ".properties"));
+            properties
+                    .load(Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream(path + suffix + ".properties"));
         } catch (final IOException exception) {
             throw new JAppRuntimeException(exception);
         }
@@ -40,8 +42,12 @@ public abstract class PropertiesHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T get(final Properties properties, final String key, final String defaultValue,
+    public static <T> T get(
+            final Properties properties,
+            final String key,
+            final String defaultValue,
             final Class<T> type) {
+
         return (T) ReflectionHelper.generateBasicValue(properties.getProperty(key, defaultValue), type);
     }
 }

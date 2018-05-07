@@ -153,8 +153,12 @@ public abstract class StringHelper {
     }
 
     public static String fixToHtml(final String string) {
-        return string.trim().replace(LT, HTML_CODE_LT).replace(GT, HTML_CODE_GT).replace(AMP, HTML_CODE_AMP)
-                .replace(QUOTE, HTML_CODE_QUOTE).replace(SINGLE_QUOTE, HTML_CODE_SINGLE_QUOTE)
+        return string.trim()
+                .replace(LT, HTML_CODE_LT)
+                .replace(GT, HTML_CODE_GT)
+                .replace(AMP, HTML_CODE_AMP)
+                .replace(QUOTE, HTML_CODE_QUOTE)
+                .replace(SINGLE_QUOTE, HTML_CODE_SINGLE_QUOTE)
                 .replace(EQUALS, HTML_CODE_EQUALS);
     }
 

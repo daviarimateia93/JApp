@@ -29,7 +29,9 @@ public abstract class JsonHelper {
     }
 
     public static ObjectMapper getObjectMapper() {
-        return new ObjectMapper().registerModule(new Hibernate5Module()).registerModule(new JavaTimeModule())
+        return new ObjectMapper()
+                .registerModule(new Hibernate5Module())
+                .registerModule(new JavaTimeModule())
                 .setDateFormat(new SimpleDateFormat(dateTimeFormatPattern))
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true)

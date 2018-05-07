@@ -10,8 +10,12 @@ public abstract class ImageHelper {
 
     }
 
-    public static BufferedImage createResizedCopy(BufferedImage originalImage, int scaledWidth, int scaledHeight,
-            boolean preserveAlpha) {
+    public static BufferedImage createResizedCopy(
+            final BufferedImage originalImage, 
+            final int scaledWidth, 
+            final int scaledHeight,
+            final boolean preserveAlpha) {
+        
         final int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         final BufferedImage bufferedImage = new BufferedImage(scaledWidth, scaledHeight, imageType);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
@@ -26,8 +30,11 @@ public abstract class ImageHelper {
         return bufferedImage;
     }
 
-    public static BufferedImage createResizedCopyProportionally(BufferedImage originalImage, int maxSize,
-            boolean preserveAlpha) {
+    public static BufferedImage createResizedCopyProportionally(
+            final BufferedImage originalImage, 
+            final int maxSize,
+            final boolean preserveAlpha) {
+        
         final double percentage;
 
         if (originalImage.getWidth() > originalImage.getHeight()) {
